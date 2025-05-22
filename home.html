@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos - CORPORACIÓN MAMANI</title>
+  <link rel="stylesheet" href="style.css" />
+
+
+  <!-- LINK CATALOGO -->
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <link rel="icon" href="images/logo.png">
+
+
+
+</head>
+
+<body>
+
+  <nav id="main-nav">
+    <div class="nav-content">
+      <img src="images/logo.png" alt="Logo Corporación Mamani" class="logo" />
+      <div class="nav-links">
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="section active">
+
+      <!-- PRODUCTOS -->
+
+      <!-- Contenedor de notificación personalizada -->
+      <div class="custom-alert" id="customAlert">
+    
+        <button class="alert-close-btn" onclick="closeAlert()">Aceptar</button>
+      </div>
+
+
+
+      <!-- Botón de carrito -->
+      <button id="btnCarrito"><i class="fas fa-shopping-cart"></i></button>
+      
+      <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+      <!-- Swiper -->
+      <div class="swiper section-info">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="images/page1.png" alt="Promoción 1"></div>
+          <div class="swiper-slide"><img src="images/page2.png" alt="Promoción 2"></div>
+          <div class="swiper-slide"><img src="images/page3.png" alt="Promoción 3"></div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="swiper-pagination"></div>
+      </div>
+
+      <h1>Catálogo de Productos de Limpieza</h1>
+
+      <!-- Barra de búsqueda -->
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, categoría o código...">
+      </div>
+
+      <!-- Catálogo -->
+      <div class="catalog" id="productCatalog">
+        <!-- Aquí se generarán las tarjetas dinámicamente -->
+      </div>
+
+      <!-- Ventana del carrito -->
+      <div class="carrito-flotante" id="carritoFlotante">
+        <h2>Carrito de Compras</h2>
+        <div id="carritoProductos"></div>
+        <button onclick="cerrarCarrito()">Cerrar</button>
+        <button class="whatsapp-button" onclick="mostrarVendedores()">
+          <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+        </button>
+      </div>
+
+
+
+      <!-- Ventana de selección de vendedores para WhatsApp -->
+      <div class="vendedores-flotante" id="vendedoresFlotante">
+        <h2>Selecciona un Vendedor</h2>
+        <div class="vendedor">
+          <p>Imelda Rojas</p>
+          <button onclick="enviarPorWhatsApp('51958368175')">
+            <i class="fab fa-whatsapp"></i> Enviar a Imelda
+          </button>
+        </div>
+        <div class="vendedor">
+          <p>Maritza Mamani</p>
+          <button onclick="enviarPorWhatsApp('51941104511')">
+            <i class="fab fa-whatsapp"></i> Enviar a Maritza
+          </button>
+        </div>
+        <div class="vendedor">
+          <p>Yaneth Mamani</p>
+          <button onclick="enviarPorWhatsApp('51915396307')">
+            <i class="fab fa-whatsapp"></i> Enviar a Yaneth
+          </button>
+        </div>
+        <button onclick="cerrarVendedores()">Cerrar</button>
+      </div>
+
+    </section>
+  </div>
+
+
+</body>
+
+<script src="productos.js"></script>
+<script src="script.js"></script>
+
+</html>

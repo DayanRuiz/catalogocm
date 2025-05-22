@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>REGISTRO</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="images/logo.ico">
+
+</head>
+
+<body>
+
+    <div class="container-inicio">
+        <div>
+            <img src="images/logo.png" alt="Logo de la empresa" class="logo_inicio" />
+        </div>
+        <div class="container">
+
+            <p class="p_inicio">Ingresa tu Datos.</p>
+
+            <div class="registro-container">
+                <form class="registro-form">
+
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ruc">RUC/DNI</label>
+                        <input type="text" id="ruc" name="ruc" required>
+                    </div>
+                     <div class="form-group-select">
+                        <label for="pais">Tipo de Negocio</label>
+                        <select id="pais" name="pais" class="form-select" required>
+                            <option value="" disabled selected>Seleccione</option>
+                            <option value="ar">Mayorista</option>
+                            <option value="mx">Minorista</option>
+                            <option value="co">Instituciones</option>
+                            <option value="es">Consumo Personal</option>
+                            <!-- Más opciones -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="telf">Teléfono</label>
+                        <input type="number" id="telf" name="telf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+
+                </form>
+            </div>
+
+        </div>
+
+        <a href="home.html">
+            <button type="submit" class="btn_inicio" id="btn">Registrarse</button>
+        </a>
+
+    </div>
+
+</body>
+
+</html>
