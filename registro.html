@@ -10,8 +10,14 @@
 
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+   <!-- Firebase App (core) -->
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<!-- Firebase Realtime Database -->
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<!-- Tu script personalizado -->
+<script defer src="script.js"></script>
+
 
 </head>
 
@@ -56,18 +62,17 @@
                         <input type="email" id="email" name="email" required>
                     </div>
 
+                    <button href="home.html" type="submit" class="btn_inicio" id="btn">Registrarse</button>
+
 
                 </form>
             </div>
 
         </div>
-
-        <a href="home.html">
-            <button type="submit" class="btn_inicio" id="btn">Registrarse</button>
-        </a>
-
     </div>
 
 </body>
+
+
 
 </html>

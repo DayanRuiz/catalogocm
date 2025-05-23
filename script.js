@@ -291,12 +291,14 @@ renderProducts();
 //FIREBASE
 
 
+// script.js
+
 const firebaseConfig = {
   apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
   authDomain: "catalogoclientes-8691c.firebaseapp.com",
   databaseURL: "https://catalogoclientes-8691c-default-rtdb.firebaseio.com",
   projectId: "catalogoclientes-8691c",
-  storageBucket: "catalogoclientes-8691c.firebasestorage.app",
+  storageBucket: "catalogoclientes-8691c.appspot.com", // corregido .appspot.com
   messagingSenderId: "1060467321295",
   appId: "1:1060467321295:web:e201cfc807d227e8cecaba",
 };
@@ -304,7 +306,6 @@ const firebaseConfig = {
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
 
 document.getElementById("formulario").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -321,10 +322,11 @@ document.getElementById("formulario").addEventListener("submit", function (e) {
     tipoNegocio: pais,
     telefono: telf,
     email,
-    fecha: new Date().toISOString()
+    fecha: new Date().toISOString(),
   };
 
-  firebase.database().ref("usuarios").push(nuevoRegistro)
+  // Guardar en nodo "usuarios"
+  db.ref("usuarios").push(nuevoRegistro)
     .then(() => {
       alert("Datos guardados exitosamente");
       document.getElementById("formulario").reset();
