@@ -290,51 +290,35 @@ renderProducts();
 
 //FIREBASE
 
-document.addEventListener("DOMContentLoaded", () => {
-  const firebaseConfig = {
-    apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
-    authDomain: "catalogoclientes-8691c.firebaseapp.com",
-    databaseURL: "https://catalogoclientes-8691c-default-rtdb.firebaseio.com",
-    projectId: "catalogoclientes-8691c",
-    storageBucket: "catalogoclientes-8691c.appspot.com",
-    messagingSenderId: "1060467321295",
-    appId: "1:1060467321295:web:e201cfc807d227e8cecaba"
-  };
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.database();
 
-  document.getElementById("formulario").addEventListener("submit", function (e) {
-    e.preventDefault();
-     console.log("¡Formulario enviado!");
+const firebaseConfig = {
+  apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
+  authDomain: "catalogoclientes-8691c.firebaseapp.com",
+  projectId: "catalogoclientes-8691c",
+  storageBucket: "catalogoclientes-8691c.appspot.com",
+  messagingSenderId: "1060467321295",
+  appId: "1:1060467321295:web:e201cfc807d227e8cecaba"
+};
 
-    const nombre = document.getElementById("nombre").value;
-    const ruc = document.getElementById("ruc").value;
-    const tipoNegocio = document.getElementById("tipoNegocio").value;
-    const telf = document.getElementById("telf").value;
-    const email = document.getElementById("email").value;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-    const nuevoRegistro = {
-      nombre,
-      ruc,
-      tipoNegocio,
-      telefono: telf,
-      email,
-      fecha: new Date().toISOString()
-    };
+//get ref to database services
+const db = getDatabase(app);
 
-    console.log("Datos a guardar:", nuevoRegistro);
+document.getElementById("submit").addEventListener('click', function (e) {
+  e.preventDefault();
+  set(ref(db, 'user/' + document.getElementById("username").value),
+    {
 
-    db.ref("usuarios").push(nuevoRegistro)
-      .then(() => {
-        alert("Datos guardados exitosamente");
-        document.getElementById("formulario").reset();
-      })
-      .catch((error) => {
-        console.error("Error al guardar datos:", error);
-        alert("Error al guardar datos");
-      });
-  });
-});
+      username: document.getElementById("username").value,
+      email: document.getElementById("email").value,
+      PhoneNumber: document.getElementById("phone").value
+
+    });
+  alert("Login Sucessfull  !");
+})
