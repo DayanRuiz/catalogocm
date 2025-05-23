@@ -291,7 +291,6 @@ renderProducts();
 //FIREBASE
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Configuración Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
     authDomain: "catalogoclientes-8691c.firebaseapp.com",
@@ -302,35 +301,35 @@ document.addEventListener("DOMContentLoaded", () => {
     appId: "1:1060467321295:web:e201cfc807d227e8cecaba"
   };
 
-  // Inicializa Firebase
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
   const db = firebase.database();
 
-  // Evento submit formulario
   document.getElementById("formulario").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const nombre = document.getElementById("nombre").value;
     const ruc = document.getElementById("ruc").value;
-    const pais = document.getElementById("pais").value;
+    const tipoNegocio = document.getElementById("tipoNegocio").value;
     const telf = document.getElementById("telf").value;
     const email = document.getElementById("email").value;
 
     const nuevoRegistro = {
       nombre,
       ruc,
-      tipoNegocio: pais,
+      tipoNegocio,
       telefono: telf,
       email,
       fecha: new Date().toISOString()
     };
 
+    console.log("Datos a guardar:", nuevoRegistro);
+
     db.ref("usuarios").push(nuevoRegistro)
       .then(() => {
         alert("Datos guardados exitosamente");
         document.getElementById("formulario").reset();
-        // Redirigir si quieres
-        // window.location.href = "home.html";
       })
       .catch((error) => {
         console.error("Error al guardar datos:", error);
@@ -338,5 +337,3 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
-
-
