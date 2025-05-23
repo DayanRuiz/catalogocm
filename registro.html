@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="images/logo.ico">
 
-     <!-- ✅ Redirección si ya está registrado -->
+    <!-- ✅ Redirección si ya está registrado -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const ruc = localStorage.getItem("rucRegistrado");
@@ -67,8 +67,7 @@
                         <input type="email" value="" id="email" required>
                     </div>
 
-                    <button type="submit"  value="submit" class="btn_inicio"
-                        id="submit">Registrarse</button>
+                    <button type="submit" value="submit" class="btn_inicio" id="submit">Registrarse</button>
 
 
                 </form>
@@ -101,7 +100,6 @@
 
         //get ref to database services
         const db = getDatabase(app);
-
         document.getElementById("formRegistro").addEventListener("submit", async function (e) {
             e.preventDefault();
 
@@ -113,22 +111,35 @@
 
             if (ruc && username && tipoNegocio && phone && email) {
                 try {
-                    await set(ref(db, "user/" + ruc), {
-                        ruc,
-                        username,
-                        tipoNegocio,
-                        phone,
-                        email
-                    });
+                    // Verifica si ya existe el RUC
+                    const snapshot = await get(child(ref(db), `user/${ruc}`));
+                    if (snapshot.exists()) {
+                        // Ya existe → sólo redirige
+                        localStorage.setItem("rucRegistrado", ruc);
+                        localStorage.setItem("usernameRegistrado", username);
+                        alert("Bienvenido nuevamente");
+                        window.location.href = "home.html";
+                    } else {
+                        // No existe → registra
+                        await set(ref(db, "user/" + ruc), {
+                            ruc,
+                            username,
+                            tipoNegocio,
+                            phone,
+                            email
+                        });
 
-                    localStorage.setItem("rucRegistrado", ruc); // ✅ Guardar en localStorage
-                    window.location.href = "home.html"; // ✅ Redirigir al home
+                        localStorage.setItem("rucRegistrado", ruc);
+                        alert("Registro exitoso");
+                        window.location.href = "home.html";
+                    }
 
                 } catch (error) {
-                    alert("Error al registrar: " + error.message);
+                    alert("Error al verificar o registrar: " + error.message);
                 }
             }
         });
+
 
     </script>
 

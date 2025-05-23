@@ -160,7 +160,7 @@ html {
   text-align: center;
   font-size: 1.18rem;
   font-weight: 600;
-  margin: 90px 0 0 0;
+  margin: 20px 0 0 0;
   cursor: pointer;
   letter-spacing: 1px;
   box-shadow: 0 4px 24px 0 rgba(0, 0, 80, 0.18);
@@ -168,6 +168,29 @@ html {
   position: relative;
   transition: background 0.4s, transform 0.2s, box-shadow 0.3s, letter-spacing 0.2s;
   animation: pulse;
+}
+
+.btn_inicio_cerrar {
+
+  text-decoration: none;
+  background: linear-gradient(90deg, #0101df 0%, #0597f2 80%);
+  border-radius: 60px;
+  border: none;
+  color: #fff;
+  padding: 5px 15px ;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 80, 0.18);
+  z-index: 1;
+  position: relative;
+  transition: background 0.4s, transform 0.2s, box-shadow 0.3s, letter-spacing 0.2s;
+  animation: pulse;
+
 }
 
 /* --- DISEÑO DE FORMULARIO --- */
@@ -823,6 +846,7 @@ button {
 .vendedor button {
   background-color: #007BFF;
   color: white;
+  
   border: none;
   padding: 8px 15px;
   border-radius: 5px;
