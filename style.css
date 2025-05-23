@@ -395,8 +395,8 @@ html {
 
 .logo {
   margin: 10px;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 14px;
   background: #f7fbff;
   box-shadow: 0 1.5px 12px rgba(0, 0, 60, 0.11);
@@ -431,6 +431,20 @@ html {
   align-items: center;
   outline: none;
 }
+.nav-links-name {
+  font-family: 'Century Gothic', Arial, sans-serif;
+  color: #002b46;
+  text-decoration: none;
+  font-size: 1.13rem;
+  font-weight: 600;
+  border-radius: 32px;
+  letter-spacing: 0.17px;
+  box-shadow: 0 1.5px 8px #0597f215;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  outline: none;
+}
 
 .nav-links a:hover,
 .nav-links a:focus {
@@ -445,13 +459,13 @@ html {
   .nav-content {
     flex-direction: row;
     align-items: center;
-    padding: 10px 3vw;
+    padding: 0 3vw;
     gap: 10px;
   }
 
   .logo {
-    width: 36px;
-    height: 36px;
+    width: 50px;
+    height: 50px;
   }
 
   .nav-links {
@@ -462,8 +476,8 @@ html {
     font-size: 0.98rem;
     padding: 10px 12px;
     min-width: 36px;
-    min-height: 36px;
     border-radius: 20px;
+    margin-right: 10PX;
   }
 }
 
