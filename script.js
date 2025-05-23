@@ -308,6 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("formulario").addEventListener("submit", function (e) {
     e.preventDefault();
+     console.log("¡Formulario enviado!");
 
     const nombre = document.getElementById("nombre").value;
     const ruc = document.getElementById("ruc").value;
