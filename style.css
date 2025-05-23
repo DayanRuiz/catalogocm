@@ -449,6 +449,10 @@ html {
   outline: none;
 }
 
+
+
+
+
 .nav-links a:hover,
 .nav-links a:focus {
   background: linear-gradient(90deg, #e7f3ff 0%, #0597f2 100%);

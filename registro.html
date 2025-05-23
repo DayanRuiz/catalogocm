@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="images/logo.ico">
 
+     <!-- ✅ Redirección si ya está registrado -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const ruc = localStorage.getItem("rucRegistrado");
+            if (ruc) {
+                window.location.href = "home.html";
+            }
+        });
+    </script>
+
+
 </head>
 
 <body>
@@ -22,21 +33,21 @@
 
             <div class="registro-container">
 
-                <form class="registro-form">
+                <form class="registro-form" id="formRegistro">
 
                     <div class="form-group">
                         <label for="username">Nombre completo</label>
-                        <input type="text" value="" id="username"  required>
+                        <input type="text" value="" id="username" required>
                     </div>
 
                     <div class="form-group">
                         <label for="ruc">RUC/DNI</label>
-                        <input type="text" value="" id="ruc"  required>
+                        <input type="text" value="" id="ruc" required>
                     </div>
 
                     <div class="form-group-select">
                         <label for="tipoNegocio">Tipo de Negocio</label>
-                        <select id="tipoNegocio" value=""  class="form-select" required>
+                        <select id="tipoNegocio" value="" class="form-select" required>
                             <option value="" disabled selected>Seleccione</option>
                             <option value="mayorista">Mayorista</option>
                             <option value="minorista">Minorista</option>
@@ -48,14 +59,18 @@
 
                     <div class="form-group">
                         <label for="phone">Teléfono</label>
-                        <input type="number" value="" id="phone"  required>
+                        <input type="number" value="" id="phone" required>
                     </div>
 
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
-                        <input type="email" value="" id="email"  required>
+                        <input type="email" value="" id="email" required>
                     </div>
-                    <button type="submit" value="submit" class="btn_inicio" id="submit">Registrarse</button>
+
+                    <button type="submit"  value="submit" class="btn_inicio"
+                        id="submit">Registrarse</button>
+
+
                 </form>
 
             </div>
@@ -87,21 +102,33 @@
         //get ref to database services
         const db = getDatabase(app);
 
-        document.getElementById("submit").addEventListener('click', function (e) {
+        document.getElementById("formRegistro").addEventListener("submit", async function (e) {
             e.preventDefault();
-            set(ref(db, 'user/' + document.getElementById("username").value),
-                {
 
-                    username: document.getElementById("username").value,
-                    ruc: document.getElementById("ruc").value,
-                    tipoNegocio: document.getElementById("tipoNegocio").value,
-                    phone: document.getElementById("phone").value,
-                    email: document.getElementById("email").value,
-                   
+            const ruc = document.getElementById("ruc").value.trim();
+            const username = document.getElementById("username").value.trim();
+            const tipoNegocio = document.getElementById("tipoNegocio").value;
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
 
-                });
-            alert("Login Sucessfull  !");
-        })
+            if (ruc && username && tipoNegocio && phone && email) {
+                try {
+                    await set(ref(db, "user/" + ruc), {
+                        ruc,
+                        username,
+                        tipoNegocio,
+                        phone,
+                        email
+                    });
+
+                    localStorage.setItem("rucRegistrado", ruc); // ✅ Guardar en localStorage
+                    window.location.href = "home.html"; // ✅ Redirigir al home
+
+                } catch (error) {
+                    alert("Error al registrar: " + error.message);
+                }
+            }
+        });
 
     </script>
 
