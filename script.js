@@ -286,39 +286,3 @@ searchInput.addEventListener("input", () => {
 
 
 renderProducts();
-
-
-//FIREBASE
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
-
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
-  authDomain: "catalogoclientes-8691c.firebaseapp.com",
-  projectId: "catalogoclientes-8691c",
-  storageBucket: "catalogoclientes-8691c.appspot.com",
-  messagingSenderId: "1060467321295",
-  appId: "1:1060467321295:web:e201cfc807d227e8cecaba"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-//get ref to database services
-const db = getDatabase(app);
-
-document.getElementById("submit").addEventListener('click', function (e) {
-  e.preventDefault();
-  set(ref(db, 'user/' + document.getElementById("username").value),
-    {
-
-      username: document.getElementById("username").value,
-      email: document.getElementById("email").value,
-      PhoneNumber: document.getElementById("phone").value
-
-    });
-  alert("Login Sucessfull  !");
-})
