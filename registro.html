@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="images/logo.ico">
 
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+
 </head>
 
 <body>
@@ -21,7 +26,7 @@
             <p class="p_inicio">Ingresa tu Datos.</p>
 
             <div class="registro-container">
-                <form class="registro-form">
+                <form class="registro-form" id="formulario">
 
                     <div class="form-group">
                         <label for="nombre">Nombre completo</label>
@@ -31,7 +36,7 @@
                         <label for="ruc">RUC/DNI</label>
                         <input type="text" id="ruc" name="ruc" required>
                     </div>
-                     <div class="form-group-select">
+                    <div class="form-group-select">
                         <label for="pais">Tipo de Negocio</label>
                         <select id="pais" name="pais" class="form-select" required>
                             <option value="" disabled selected>Seleccione</option>

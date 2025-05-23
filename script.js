@@ -253,12 +253,12 @@ function cerrarVendedores() {
 
 // Mostrar lista de vendedores para llamada
 //btnLlamar.addEventListener("click", () => {
- // vendedoresLlamadaFlotante.style.display = "block";
+// vendedoresLlamadaFlotante.style.display = "block";
 //});
 
 // Cerrar lista de vendedores para llamada
 //function cerrarLlamadaFlotante() {
-  //vendedoresLlamadaFlotante.style.display = "none";
+//vendedoresLlamadaFlotante.style.display = "none";
 //}
 
 // Enviar por WhatsApp
@@ -273,9 +273,9 @@ function enviarPorWhatsApp(numeroVendedor) {
 
 // Iniciar llamada
 //function iniciarLlamada(telefono) {
- // const confirmacionLlamada = confirm(`¿Deseas iniciar una llamada al número ${telefono}?`);
+// const confirmacionLlamada = confirm(`¿Deseas iniciar una llamada al número ${telefono}?`);
 //  if (confirmacionLlamada) {
- //   window.location.href = `tel:${telefono}`;
+//   window.location.href = `tel:${telefono}`;
 //  }
 //}
 
@@ -288,5 +288,49 @@ searchInput.addEventListener("input", () => {
 renderProducts();
 
 
+//FIREBASE
 
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBVaqXJDkoSzPslAjRrh0GkKbuVC2ac3VI",
+  authDomain: "catalogoclientes-8691c.firebaseapp.com",
+  databaseURL: "https://catalogoclientes-8691c-default-rtdb.firebaseio.com",
+  projectId: "catalogoclientes-8691c",
+  storageBucket: "catalogoclientes-8691c.firebasestorage.app",
+  messagingSenderId: "1060467321295",
+  appId: "1:1060467321295:web:e201cfc807d227e8cecaba",
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
+document.getElementById("formulario").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value;
+  const ruc = document.getElementById("ruc").value;
+  const pais = document.getElementById("pais").value;
+  const telf = document.getElementById("telf").value;
+  const email = document.getElementById("email").value;
+
+  const nuevoRegistro = {
+    nombre,
+    ruc,
+    tipoNegocio: pais,
+    telefono: telf,
+    email,
+    fecha: new Date().toISOString()
+  };
+
+  firebase.database().ref("usuarios").push(nuevoRegistro)
+    .then(() => {
+      alert("Datos guardados exitosamente");
+      document.getElementById("formulario").reset();
+    })
+    .catch((error) => {
+      console.error("Error al guardar datos:", error);
+      alert("Error al guardar datos");
+    });
+});
