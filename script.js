@@ -30,31 +30,29 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 //marcas
+//document.addEventListener('DOMContentLoaded', () => {
+  //const carousel = document.getElementById('carousel');
+  //let scrollAmount = 0;
 
+ // function autoScrollCarousel() {
+   // if (!carousel) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const carousel = document.getElementById('carousel');
-  let scrollAmount = 0;
+  //  const maxScroll = carousel.scrollWidth - carousel.clientWidth;
 
-  function autoScrollCarousel() {
-    if (!carousel) return;
+  //  if (scrollAmount >= maxScroll) {
+  //    scrollAmount = 0;
+  //  } else {
+  //    scrollAmount += 270; // ajusta al ancho + margen
+ //   }
 
-    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+  //  carousel.scrollTo({
+ //     left: scrollAmount,
+ //     behavior: 'smooth'
+ //   });
+//  }
 
-    if (scrollAmount >= maxScroll) {
-      scrollAmount = 0;
-    } else {
-      scrollAmount += 270; // ajusta al ancho + margen
-    }
-
-    carousel.scrollTo({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
-  }
-
-  setInterval(autoScrollCarousel, 3000);
-});
+  //setInterval(autoScrollCarousel, 3000);
+//});
 
 
 
@@ -280,9 +278,42 @@ function enviarPorWhatsApp(numeroVendedor) {
 //}
 
 // Eventos de búsqueda
-searchInput.addEventListener("input", () => {
-  renderProducts(searchInput.value);
+//searchInput.addEventListener("input", () => {
+ // renderProducts(searchInput.value);
+//});
+
+
+//renderProducts();
+
+
+let products = [];
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const db = firebase.database();
+  const ref = db.ref("productos");
+
+  ref.once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+
+      products = Object.keys(data).map(key => ({
+        name: data[key].name,
+        category: data[key].category,
+        code: key,
+        image: data[key].image,
+      }));
+
+      renderProducts();
+    })
+    .catch(console.error);
+
+  renderCarrito();
+
+  searchInput.addEventListener("input", (e) => {
+    renderProducts(e.target.value);
+  });
 });
 
 
-renderProducts();
