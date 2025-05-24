@@ -286,34 +286,72 @@ function enviarPorWhatsApp(numeroVendedor) {
 //renderProducts();
 
 
-let products = [];
+////FIREBASEE////
 
 
+// Verifica si el caché expiró
+  function cacheExpirado(horas = 12) {
+    const timestampGuardado = localStorage.getItem("productos_timestamp");
+    if (!timestampGuardado) return true;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const db = firebase.database();
-  const ref = db.ref("productos");
+    const ahora = Date.now();
+    const vencimiento = horas * 60 * 60 * 1000;
 
-  ref.once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
+    return (ahora - parseInt(timestampGuardado)) > vencimiento;
+  }
 
-      products = Object.keys(data).map(key => ({
-        name: data[key].name,
-        category: data[key].category,
-        code: key,
-        image: data[key].image,
-      }));
+  // Forzar actualización manual del catálogo
+  function forzarActualizacion() {
+    localStorage.removeItem("productos");
+    localStorage.removeItem("productos_timestamp");
+    location.reload();
+  }
 
+  // Productos
+  let products = [];
+
+  // Carga productos desde Firebase o caché
+  document.addEventListener("DOMContentLoaded", () => {
+    const productosGuardados = localStorage.getItem("productos");
+
+    if (productosGuardados && !cacheExpirado(12)) {
+      products = JSON.parse(productosGuardados);
       renderProducts();
-    })
-    .catch(console.error);
+    } else {
+      const db = firebase.database();
+      const ref = db.ref("productos");
 
-  renderCarrito();
+      ref.once("value")
+        .then(snapshot => {
+          const data = snapshot.val();
+          products = Object.keys(data).map(key => ({
+            name: data[key].name,
+            category: data[key].category,
+            code: key,
+            image: data[key].image,
+          }));
 
-  searchInput.addEventListener("input", (e) => {
-    renderProducts(e.target.value);
+          renderProducts();
+
+          localStorage.setItem("productos", JSON.stringify(products));
+          localStorage.setItem("productos_timestamp", Date.now().toString());
+        })
+        .catch(console.error);
+    }
+
+    renderCarrito();
+
+    searchInput.addEventListener("input", debounce((e) => {
+      renderProducts(e.target.value);
+    }, 300));
   });
-});
 
+  // Función debounce para mejorar búsqueda
+  function debounce(fn, delay) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
 
