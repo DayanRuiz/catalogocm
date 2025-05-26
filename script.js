@@ -142,7 +142,14 @@ const firebaseConfig = {
   measurementId: "G-BBN29KMY8Z"
 };
 
-firebase.initializeApp(firebaseConfig);
+window.addEventListener('DOMContentLoaded', () => {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  cargarProductos();
+});
+
 
 let products = [];
 let page = 1;
