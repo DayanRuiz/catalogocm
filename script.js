@@ -119,9 +119,9 @@ function closeAlert() {
 const firebaseConfig = {
   apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
   authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
-  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com", // IMPORTANTE: Añadir databaseURL para RTDB
+  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
   projectId: "catalogoproductos-a2ab0",
-  storageBucket: "catalogoproductos-a2ab0.appspot.com", // Corregido storageBucket (sin .firebaseapp.com)
+  storageBucket: "catalogoproductos-a2ab0.appspot.com",
   messagingSenderId: "998590972541",
   appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
   measurementId: "G-BBN29KMY8Z"
@@ -255,19 +255,56 @@ function debounce(fn, delay) {
   };
 }
 
+// --- SPA: Navegación sin recarga ---
+
+function setupSpaNavigation() {
+  // Controlar hashchange para mostrar sección
+  window.addEventListener("hashchange", () => {
+    const sectionFromHash = window.location.hash.replace("#", "");
+    if (sectionFromHash) {
+      showSection(sectionFromHash);
+
+      if (sectionFromHash === "productos") {
+        const searchInput = document.getElementById("searchInput");
+        renderProducts(searchInput ? searchInput.value : "");
+      }
+    }
+  });
+
+  // Modificar comportamiento enlaces para evitar recarga o scroll automático
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const target = link.getAttribute("href").replace("#", "");
+      window.location.hash = target;
+    });
+  });
+}
+
 // --- EVENTO PRINCIPAL ---
 window.addEventListener('DOMContentLoaded', () => {
 
+  // Inicializar navegación SPA
+  setupSpaNavigation();
 
-  // Dentro de window.addEventListener('DOMContentLoaded', ...)
+  // Mostrar sección inicial
+  const sectionFromHash = window.location.hash.replace('#', '');
+  if (sectionFromHash) {
+    showSection(sectionFromHash);
+
+    if (sectionFromHash === "productos") {
+      const searchInput = document.getElementById("searchInput");
+      renderProducts(searchInput ? searchInput.value : "");
+    }
+  } else {
+    // Muestra sección por defecto si no hay hash (ajusta a tu sección por defecto)
+    showSection("inicio");
+  }
+
+  // Carga productos si no cargados
   if (!products.length) {
     cargarProductos();
   }
-
-
-  // Mostrar sección desde hash
-  const sectionFromHash = window.location.hash.replace('#', '');
-  if (sectionFromHash) showSection(sectionFromHash);
 
   // Renderizar carrito guardado
   renderCarrito();
@@ -286,7 +323,6 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
 // Exponer funciones globalmente para que funcionen los botones en el HTML
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
@@ -295,4 +331,5 @@ window.mostrarVendedores = mostrarVendedores;
 window.cerrarVendedores = cerrarVendedores;
 window.enviarPorWhatsApp = enviarPorWhatsApp;
 window.closeAlert = closeAlert;
+
 
