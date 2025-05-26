@@ -10,6 +10,8 @@ const btnCarrito = document.getElementById("btnCarrito");
 const vendedoresFlotante = document.getElementById("vendedoresFlotante");
 const btnLoadMore = document.createElement("button");
 btnLoadMore.textContent = "Cargar más";
+const loadingIndicator = document.getElementById('loadingIndicator');
+const productCatalog = document.getElementById('productCatalog');
 
 // Config Swiper
 const swiper = new Swiper('.swiper', {
@@ -144,12 +146,13 @@ function cacheExpirado(horas = 12) {
 // Cargar productos async usando modular Firebase
 async function cargarProductos() {
   try {
+    loadingIndicator.style.display = 'block';  // <-- Mostrar loading
+
     const productosGuardados = localStorage.getItem("productos_light");
 
     if (productosGuardados && !cacheExpirado()) {
       const productosLight = JSON.parse(productosGuardados);
 
-      // Obtener imágenes y datos desde Firebase Realtime Database
       const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
 
@@ -158,6 +161,7 @@ async function cargarProductos() {
         image: data[p.code]?.image || "img/sinimagen.jpg"
       }));
 
+      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
       renderProducts();
 
     } else {
@@ -180,12 +184,15 @@ async function cargarProductos() {
       localStorage.setItem("productos_light", JSON.stringify(productosLight));
       localStorage.setItem("productos_timestamp", Date.now().toString());
 
+      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
       renderProducts();
     }
   } catch (error) {
+    loadingIndicator.style.display = 'none';  // <-- Ocultar loading también en error
     console.error("Error cargando productos:", error);
   }
 }
+
 
 function forzarActualizacion() {
   localStorage.removeItem("productos_light");

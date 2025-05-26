@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
   <link rel="icon" href="images/logo.png">
 </head>
+
 <body>
 
   <!-- NAV -->
@@ -51,6 +53,14 @@
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, categoría o código...">
       </div>
+
+      <!-- Indicador de carga -->
+      <div id="loadingIndicator" class="loading-indicator" style="display:none;">
+        <button disabled>
+          <i class="fas fa-spinner fa-spin"></i> Cargando productos...
+        </button>
+      </div>
+
 
       <!-- CATÁLOGO -->
       <div class="catalog" id="productCatalog"></div>
@@ -104,7 +114,8 @@
             <ul>
               <li class="lista">📞 Telf: <a href="tel:+51941104511">+51 941 104 511</a></li>
               <li class="lista">📞 Telf: <a href="tel:+51941104511">+51 941 104 511</a></li>
-              <li class="lista">📧 Email: <a href="mailto:ventas@corporacionmamani.com">ventas@corporacionmamani.com</a></li>
+              <li class="lista">📧 Email: <a href="mailto:ventas@corporacionmamani.com">ventas@corporacionmamani.com</a>
+              </li>
             </ul>
           </div>
 
@@ -125,7 +136,8 @@
             <h2>Mina de Oro</h2>
             <ul>
               <li class="lista">📞 Contacto: <a href="tel:+51960908517">+51 960 908 517</a></li>
-              <li class="lista">📍 Dirección: Jr. Cuzco Nro 752 Int 127 1er Piso Galeria Mina de Oro II Lima-Lima-Lima</li>
+              <li class="lista">📍 Dirección: Jr. Cuzco Nro 752 Int 127 1er Piso Galeria Mina de Oro II Lima-Lima-Lima
+              </li>
               <li class="lista">🕒 Horario: Lunes a Sábado, 9:00 AM - 8:00 PM</li>
 
               <h2>Capon Center</h2>
@@ -194,4 +206,5 @@
   </script>
 
 </body>
+
 </html>
