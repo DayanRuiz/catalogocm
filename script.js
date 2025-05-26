@@ -38,26 +38,6 @@ function showSection(sectionId) {
   });
 }
 
-// Carga inicial
-window.addEventListener('DOMContentLoaded', () => {
-  const sectionFromHash = window.location.hash.replace('#', '');
-  if (sectionFromHash) showSection(sectionFromHash);
-
-  renderCarrito();
-  cargarProductos();
-
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) {
-    searchInput.addEventListener("input", debounce(() => {
-      renderProducts(searchInput.value);
-    }, 300));
-  }
-
-  btnCarrito.addEventListener("click", () => {
-    carritoFlotante.style.display = "block";
-  });
-});
-
 // Carrito
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -141,15 +121,6 @@ const firebaseConfig = {
   appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
   measurementId: "G-BBN29KMY8Z"
 };
-
-window.addEventListener('DOMContentLoaded', () => {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  cargarProductos();
-});
-
 
 let products = [];
 let page = 1;
@@ -263,3 +234,35 @@ function debounce(fn, delay) {
     timeout = setTimeout(() => fn.apply(this, args), delay);
   };
 }
+
+// --- EVENTO PRINCIPAL ---
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Inicializar Firebase
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  // Cargar productos después de inicializar Firebase
+  cargarProductos();
+
+  // Mostrar sección desde hash
+  const sectionFromHash = window.location.hash.replace('#', '');
+  if (sectionFromHash) showSection(sectionFromHash);
+
+  // Renderizar carrito guardado
+  renderCarrito();
+
+  // Escuchar búsqueda con debounce
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", debounce(() => {
+      renderProducts(searchInput.value);
+    }, 300));
+  }
+
+  // Mostrar carrito al hacer clic
+  btnCarrito.addEventListener("click", () => {
+    carritoFlotante.style.display = "block";
+  });
+});
