@@ -275,14 +275,15 @@ function forzarActualizacion() {
       // Guarda productos en caché para futuras visitas (12 horas)
 
       // Guardar versión liviana sin imágenes para evitar saturar localStorage
+      // Guardar solo datos livianos sin imágenes para evitar exceder localStorage
       const productosLight = products.map(p => ({
         name: p.name,
         category: p.category,
         code: p.code
       }));
       localStorage.setItem("productos_light", JSON.stringify(productosLight));
-
       localStorage.setItem("productos_timestamp", Date.now().toString());
+
 
       renderProducts(); // Solo renderiza una vez, al
 
@@ -326,15 +327,16 @@ document.addEventListener("DOMContentLoaded", () => {
     ref.once("value")
       .then(snapshot => {
         const data = snapshot.val();
-        products = Object.keys(data).map(key => ({
-          name: data[key].name,
-          category: data[key].category,
-          code: key,
-          image: data[key].image,
-        }));
 
-        localStorage.setItem("productos", JSON.stringify(products));
+        // Guardar versión liviana sin imágenes
+        const productosLight = products.map(p => ({
+          name: p.name,
+          category: p.category,
+          code: p.code
+        }));
+        localStorage.setItem("productos_light", JSON.stringify(productosLight));
         localStorage.setItem("productos_timestamp", Date.now().toString());
+
 
         renderProducts(); // Cargar productos visibles
       })
