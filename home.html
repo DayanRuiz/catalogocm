@@ -113,7 +113,7 @@
           </button>
         </div>
         <button class="btn_inicio_cerrar" onclick="cerrarVendedores()">Cerrar</button>
-       
+
 
       </div>
 
@@ -128,9 +128,13 @@
 <!--INICIALIZAR FIREBASE RENDER PRODUCTOS -->
 
 <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script>
+<script type="module">
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+
+
   // Configura con tus datos reales de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
@@ -141,14 +145,23 @@
     appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
     measurementId: "G-BBN29KMY8Z"
   };
-  firebase.initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const dbRef = ref(db, "productos");
+
+  get(dbRef).then((snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      console.log("Productos cargados:", data);
+      // Aquí puedes continuar con tu renderizado
+    } else {
+      console.log("No hay datos.");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
 </script>
-
-
-
-
-
-<!--<script src="productos.js"></script> -->
 
 <script src="script.js"></script>
 
