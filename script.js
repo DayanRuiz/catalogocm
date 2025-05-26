@@ -29,30 +29,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-//marcas
-//document.addEventListener('DOMContentLoaded', () => {
-//const carousel = document.getElementById('carousel');
-//let scrollAmount = 0;
-
-// function autoScrollCarousel() {
-// if (!carousel) return;
-
-//  const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-
-//  if (scrollAmount >= maxScroll) {
-//    scrollAmount = 0;
-//  } else {
-//    scrollAmount += 270; // ajusta al ancho + margen
-//   }
-
-//  carousel.scrollTo({
-//     left: scrollAmount,
-//     behavior: 'smooth'
-//   });
-//  }
-
-//setInterval(autoScrollCarousel, 3000);
-//});
 
 
 
@@ -249,15 +225,7 @@ function cerrarVendedores() {
   vendedoresFlotante.style.display = "none";
 }
 
-// Mostrar lista de vendedores para llamada
-//btnLlamar.addEventListener("click", () => {
-// vendedoresLlamadaFlotante.style.display = "block";
-//});
 
-// Cerrar lista de vendedores para llamada
-//function cerrarLlamadaFlotante() {
-//vendedoresLlamadaFlotante.style.display = "none";
-//}
 
 // Enviar por WhatsApp
 function enviarPorWhatsApp(numeroVendedor) {
@@ -269,21 +237,7 @@ function enviarPorWhatsApp(numeroVendedor) {
   window.open(url, "_blank");
 }
 
-// Iniciar llamada
-//function iniciarLlamada(telefono) {
-// const confirmacionLlamada = confirm(`¿Deseas iniciar una llamada al número ${telefono}?`);
-//  if (confirmacionLlamada) {
-//   window.location.href = `tel:${telefono}`;
-//  }
-//}
 
-// Eventos de búsqueda
-//searchInput.addEventListener("input", () => {
-// renderProducts(searchInput.value);
-//});
-
-
-//renderProducts();
 
 
 ////FIREBASEE////
@@ -319,7 +273,15 @@ function forzarActualizacion() {
       }));
 
       // Guarda productos en caché para futuras visitas (12 horas)
-      localStorage.setItem("productos", JSON.stringify(products));
+
+      // Guardar versión liviana sin imágenes para evitar saturar localStorage
+      const productosLight = products.map(p => ({
+        name: p.name,
+        category: p.category,
+        code: p.code
+      }));
+      localStorage.setItem("productos_light", JSON.stringify(productosLight));
+
       localStorage.setItem("productos_timestamp", Date.now().toString());
 
       renderProducts(); // Solo renderiza una vez, al
@@ -335,12 +297,29 @@ let products = [];
 
 // Carga productos desde Firebase o caché
 document.addEventListener("DOMContentLoaded", () => {
-  const productosGuardados = localStorage.getItem("productos");
+
+  const productosGuardados = localStorage.getItem("productos_light");
 
   if (productosGuardados && !cacheExpirado(12)) {
-    products = JSON.parse(productosGuardados);
-    renderProducts();
-  } else {
+    const productosLight = JSON.parse(productosGuardados);
+
+    // Como esta versión no tiene imágenes, debes volver a cargarlas desde Firebase
+    const db = firebase.database();
+    const ref = db.ref("productos");
+
+    ref.once("value").then(snapshot => {
+      const data = snapshot.val();
+      products = productosLight.map(p => ({
+        ...p,
+        image: data[p.code]?.image || "img/sinimagen.jpg"
+      }));
+
+      renderProducts();
+    }).catch(console.error);
+  }
+
+
+  else {
     const db = firebase.database();
     const ref = db.ref("productos");
 
