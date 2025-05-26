@@ -397,16 +397,27 @@ html {
 
 /* --- nav --- */
 
-#main-nav {
-  width: 100vw;
-  background: #fff;
-  box-shadow: 0 4px 18px rgba(1, 1, 80, 0.10);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  padding: 0;
-  transition: box-shadow 0.18s;
+#main-nav .nav-content > div a {
+  color: #333;               /* Color base para enlaces */
+  font-size: 1.2rem;         /* Tamaño similar para enlaces */
+  text-decoration: none;     /* Sin subrayado */
+  display: inline-flex;      /* Para alinear verticalmente */
+  align-items: center;
+  justify-content: center;
+  width: 3rem;               /* Tamaño fijo para evitar cambio de layout */
+  height: 3rem;
+  transition: color 0.3s ease;
 }
+
+#main-nav .nav-content > div a:hover {
+  color: #007BFF;            /* Color hover (ejemplo) */
+}
+
+#main-nav .nav-content > div a i {
+  font-size: 1.5rem;         /* Tamaño del icono */
+  color: inherit;            /* Hereda el color del enlace */
+}
+
 
 .nav-content {
   max-width: 1200px;
