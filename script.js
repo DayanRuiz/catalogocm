@@ -31,27 +31,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
 //marcas
 //document.addEventListener('DOMContentLoaded', () => {
-  //const carousel = document.getElementById('carousel');
-  //let scrollAmount = 0;
+//const carousel = document.getElementById('carousel');
+//let scrollAmount = 0;
 
- // function autoScrollCarousel() {
-   // if (!carousel) return;
+// function autoScrollCarousel() {
+// if (!carousel) return;
 
-  //  const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+//  const maxScroll = carousel.scrollWidth - carousel.clientWidth;
 
-  //  if (scrollAmount >= maxScroll) {
-  //    scrollAmount = 0;
-  //  } else {
-  //    scrollAmount += 270; // ajusta al ancho + margen
- //   }
+//  if (scrollAmount >= maxScroll) {
+//    scrollAmount = 0;
+//  } else {
+//    scrollAmount += 270; // ajusta al ancho + margen
+//   }
 
-  //  carousel.scrollTo({
- //     left: scrollAmount,
- //     behavior: 'smooth'
- //   });
+//  carousel.scrollTo({
+//     left: scrollAmount,
+//     behavior: 'smooth'
+//   });
 //  }
 
-  //setInterval(autoScrollCarousel, 3000);
+//setInterval(autoScrollCarousel, 3000);
 //});
 
 
@@ -279,7 +279,7 @@ function enviarPorWhatsApp(numeroVendedor) {
 
 // Eventos de búsqueda
 //searchInput.addEventListener("input", () => {
- // renderProducts(searchInput.value);
+// renderProducts(searchInput.value);
 //});
 
 
@@ -290,68 +290,81 @@ function enviarPorWhatsApp(numeroVendedor) {
 
 
 // Verifica si el caché expiró
-  function cacheExpirado(horas = 12) {
-    const timestampGuardado = localStorage.getItem("productos_timestamp");
-    if (!timestampGuardado) return true;
+function cacheExpirado(horas = 12) {
+  const timestampGuardado = localStorage.getItem("productos_timestamp");
+  if (!timestampGuardado) return true;
 
-    const ahora = Date.now();
-    const vencimiento = horas * 60 * 60 * 1000;
+  const ahora = Date.now();
+  const vencimiento = horas * 60 * 60 * 1000;
 
-    return (ahora - parseInt(timestampGuardado)) > vencimiento;
-  }
+  return (ahora - parseInt(timestampGuardado)) > vencimiento;
+}
 
-  // Forzar actualización manual del catálogo
-  function forzarActualizacion() {
-    localStorage.removeItem("productos");
-    localStorage.removeItem("productos_timestamp");
-    location.reload();
-  }
+// Forzar actualización manual del catálogo
+function forzarActualizacion() {
+  localStorage.removeItem("productos_timestamp");
 
-  // Productos
-  let products = [];
+  const db = firebase.database();
+  const ref = db.ref("productos");
 
-  // Carga productos desde Firebase o caché
-  document.addEventListener("DOMContentLoaded", () => {
-    const productosGuardados = localStorage.getItem("productos");
-
-    if (productosGuardados && !cacheExpirado(12)) {
-      products = JSON.parse(productosGuardados);
+  ref.once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      products = Object.keys(data).map(key => ({
+        name: data[key].name,
+        category: data[key].category,
+        code: key,
+        image: data[key].image,
+      }));
       renderProducts();
-    } else {
-      const db = firebase.database();
-      const ref = db.ref("productos");
+      localStorage.setItem("productos_timestamp", Date.now().toString());
+    })
+    .catch(console.error);
+}
 
-      ref.once("value")
-        .then(snapshot => {
-          const data = snapshot.val();
-          products = Object.keys(data).map(key => ({
-            name: data[key].name,
-            category: data[key].category,
-            code: key,
-            image: data[key].image,
-          }));
 
-          renderProducts();
+// Productos
+let products = [];
 
-          localStorage.setItem("productos", JSON.stringify(products));
-          localStorage.setItem("productos_timestamp", Date.now().toString());
-        })
-        .catch(console.error);
-    }
+// Carga productos desde Firebase o caché
+document.addEventListener("DOMContentLoaded", () => {
 
-    renderCarrito();
+  if (!cacheExpirado(12)) {
+    console.log("Datos todavía válidos según timestamp, pero se vuelven a cargar desde Firebase igual para evitar errores por localStorage.");
+  } else {
+    const db = firebase.database();
+    const ref = db.ref("productos");
 
-    searchInput.addEventListener("input", debounce((e) => {
-      renderProducts(e.target.value);
-    }, 300));
-  });
+    ref.once("value")
+      .then(snapshot => {
+        const data = snapshot.val();
+        products = Object.keys(data).map(key => ({
+          name: data[key].name,
+          category: data[key].category,
+          code: key,
+          image: data[key].image,
+        }));
 
-  // Función debounce para mejorar búsqueda
-  function debounce(fn, delay) {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn.apply(this, args), delay);
-    };
+        renderProducts();
+
+        localStorage.setItem("productos_timestamp", Date.now().toString()); // ✅ solo el timestamp
+      })
+      .catch(console.error);
   }
+
+  renderCarrito();
+
+  searchInput.addEventListener("input", debounce((e) => {
+    renderProducts(e.target.value);
+  }, 300));
+});
+
+// Función debounce para mejorar búsqueda
+function debounce(fn, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
 
