@@ -256,38 +256,36 @@ function cacheExpirado(horas = 12) {
 
 // Forzar actualización manual del catálogo
 function forzarActualizacion() {
-  localStorage.removeItem("productos_timestamp");
+ localStorage.removeItem("productos_light");
+localStorage.removeItem("productos_timestamp");
+
 
   const db = firebase.database();
   const ref = db.ref("productos");
 
-  ref.once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
+ref.once("value")
+  .then(snapshot => {
+    const data = snapshot.val();
 
-      products = Object.keys(data).map(key => ({
-        name: data[key].name,
-        category: data[key].category,
-        code: key,
-        image: data[key].image,
-      }));
+    products = Object.keys(data).map(key => ({
+      name: data[key].name,
+      category: data[key].category,
+      code: key,
+      image: data[key].image,
+    }));
 
-      // Guarda productos en caché para futuras visitas (12 horas)
+    // Guardar versión liviana sin imágenes
+    const productosLight = products.map(p => ({
+      name: p.name,
+      category: p.category,
+      code: p.code
+    }));
+    localStorage.setItem("productos_light", JSON.stringify(productosLight));
+    localStorage.setItem("productos_timestamp", Date.now().toString());
 
-      // Guardar versión liviana sin imágenes para evitar saturar localStorage
-      // Guardar solo datos livianos sin imágenes para evitar exceder localStorage
-      const productosLight = products.map(p => ({
-        name: p.name,
-        category: p.category,
-        code: p.code
-      }));
-      localStorage.setItem("productos_light", JSON.stringify(productosLight));
-      localStorage.setItem("productos_timestamp", Date.now().toString());
+    renderProducts();
+  })
 
-
-      renderProducts(); // Solo renderiza una vez, al
-
-    })
 
     .catch(console.error);
 }
@@ -304,19 +302,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (productosGuardados && !cacheExpirado(12)) {
     const productosLight = JSON.parse(productosGuardados);
 
-    // Como esta versión no tiene imágenes, debes volver a cargarlas desde Firebase
-    const db = firebase.database();
-    const ref = db.ref("productos");
+// Como esta versión no tiene imágenes, debes volver a cargarlas desde Firebase
+const db = firebase.database();
+const ref = db.ref("productos");
 
-    ref.once("value").then(snapshot => {
-      const data = snapshot.val();
-      products = productosLight.map(p => ({
-        ...p,
-        image: data[p.code]?.image || "img/sinimagen.jpg"
-      }));
+ref.once("value").then(snapshot => {
+  const data = snapshot.val();
+  products = productosLight.map(p => ({
+    ...p,
+    image: data[p.code]?.image || "img/sinimagen.jpg"
+  }));
 
-      renderProducts();
-    }).catch(console.error);
+  renderProducts();
+})
+
+    
+    
+    .catch(console.error);
   }
 
 
