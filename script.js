@@ -257,7 +257,13 @@ function debounce(fn, delay) {
 
 // --- EVENTO PRINCIPAL ---
 window.addEventListener('DOMContentLoaded', () => {
-  cargarProductos();
+
+
+  // Dentro de window.addEventListener('DOMContentLoaded', ...)
+  if (!products.length) {
+    cargarProductos();
+  }
+
 
   // Mostrar sección desde hash
   const sectionFromHash = window.location.hash.replace('#', '');
