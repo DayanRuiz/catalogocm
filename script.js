@@ -1,3 +1,7 @@
+// IMPORTS MODULARES (solo funciona con <script type="module"> en HTML)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
 // Elementos globales
 const catalog = document.getElementById("productCatalog");
 const carritoFlotante = document.getElementById("carritoFlotante");
@@ -115,12 +119,17 @@ function closeAlert() {
 const firebaseConfig = {
   apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
   authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
+  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com", // IMPORTANTE: Añadir databaseURL para RTDB
   projectId: "catalogoproductos-a2ab0",
-  storageBucket: "catalogoproductos-a2ab0.firebasestorage.app",
+  storageBucket: "catalogoproductos-a2ab0.appspot.com", // Corregido storageBucket (sin .firebaseapp.com)
   messagingSenderId: "998590972541",
   appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
   measurementId: "G-BBN29KMY8Z"
 };
+
+// Inicializar Firebase app y base de datos
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 let products = [];
 let page = 1;
@@ -132,38 +141,49 @@ function cacheExpirado(horas = 12) {
   return (Date.now() - parseInt(timestamp)) > horas * 60 * 60 * 1000;
 }
 
-function cargarProductos() {
-  const productosGuardados = localStorage.getItem("productos_light");
+// Cargar productos async usando modular Firebase
+async function cargarProductos() {
+  try {
+    const productosGuardados = localStorage.getItem("productos_light");
 
-  if (productosGuardados && !cacheExpirado()) {
-    const productosLight = JSON.parse(productosGuardados);
-    firebase.database().ref("productos").once("value").then(snapshot => {
+    if (productosGuardados && !cacheExpirado()) {
+      const productosLight = JSON.parse(productosGuardados);
+
+      // Obtener imágenes y datos desde Firebase Realtime Database
+      const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
+
       products = productosLight.map(p => ({
         ...p,
         image: data[p.code]?.image || "img/sinimagen.jpg"
       }));
+
       renderProducts();
-    }).catch(console.error);
-  } else {
-    firebase.database().ref("productos").once("value").then(snapshot => {
+
+    } else {
+      const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
+
       products = Object.keys(data).map(key => ({
         name: data[key].name,
         category: data[key].category,
         code: key,
-        image: data[key].image,
+        image: data[key].image || "img/sinimagen.jpg",
       }));
+
       const productosLight = products.map(p => ({
         name: p.name,
         category: p.category,
         code: p.code
       }));
+
       localStorage.setItem("productos_light", JSON.stringify(productosLight));
       localStorage.setItem("productos_timestamp", Date.now().toString());
 
       renderProducts();
-    }).catch(console.error);
+    }
+  } catch (error) {
+    console.error("Error cargando productos:", error);
   }
 }
 
@@ -236,14 +256,7 @@ function debounce(fn, delay) {
 }
 
 // --- EVENTO PRINCIPAL ---
-
 window.addEventListener('DOMContentLoaded', () => {
-  // Inicializar Firebase
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  // Cargar productos después de inicializar Firebase
   cargarProductos();
 
   // Mostrar sección desde hash
