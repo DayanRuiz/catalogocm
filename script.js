@@ -279,3 +279,14 @@ window.addEventListener('DOMContentLoaded', () => {
     carritoFlotante.style.display = "block";
   });
 });
+
+
+// Exponer funciones globalmente para que funcionen los botones en el HTML
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.cerrarCarrito = cerrarCarrito;
+window.mostrarVendedores = mostrarVendedores;
+window.cerrarVendedores = cerrarVendedores;
+window.enviarPorWhatsApp = enviarPorWhatsApp;
+window.closeAlert = closeAlert;
+
