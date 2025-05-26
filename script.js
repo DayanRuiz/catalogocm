@@ -310,15 +310,22 @@ function forzarActualizacion() {
   ref.once("value")
     .then(snapshot => {
       const data = snapshot.val();
+
       products = Object.keys(data).map(key => ({
         name: data[key].name,
         category: data[key].category,
         code: key,
         image: data[key].image,
       }));
-      renderProducts();
+
+      // Guarda productos en caché para futuras visitas (12 horas)
+      localStorage.setItem("productos", JSON.stringify(products));
       localStorage.setItem("productos_timestamp", Date.now().toString());
+
+      renderProducts(); // Solo renderiza una vez, al
+
     })
+
     .catch(console.error);
 }
 
@@ -328,9 +335,11 @@ let products = [];
 
 // Carga productos desde Firebase o caché
 document.addEventListener("DOMContentLoaded", () => {
+  const productosGuardados = localStorage.getItem("productos");
 
-  if (!cacheExpirado(12)) {
-    console.log("Datos todavía válidos según timestamp, pero se vuelven a cargar desde Firebase igual para evitar errores por localStorage.");
+  if (productosGuardados && !cacheExpirado(12)) {
+    products = JSON.parse(productosGuardados);
+    renderProducts();
   } else {
     const db = firebase.database();
     const ref = db.ref("productos");
@@ -345,9 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
           image: data[key].image,
         }));
 
-        renderProducts();
+        localStorage.setItem("productos", JSON.stringify(products));
+        localStorage.setItem("productos_timestamp", Date.now().toString());
 
-        localStorage.setItem("productos_timestamp", Date.now().toString()); // ✅ solo el timestamp
+        renderProducts(); // Cargar productos visibles
       })
       .catch(console.error);
   }
@@ -358,6 +368,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderProducts(e.target.value);
   }, 300));
 });
+
+
 
 // Función debounce para mejorar búsqueda
 function debounce(fn, delay) {
