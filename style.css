@@ -457,6 +457,13 @@ html {
  
 }
 
+/* Estilo para los botones íconos */
+#main-nav .nav-content > .icon-buttons {
+  display: flex;
+  flex-direction: row; /* Alinea los <a> en fila */
+  gap: 10px;           /* Espacio entre los íconos */
+  align-items: center; /* Alinea con el contenido adyacente */
+}
 
 
 
@@ -465,6 +472,7 @@ html {
   height: 35px;
   display: inline-flex;
   align-items: center;
+
   justify-content: center;
   border-radius: 50%;
   text-decoration: none;
@@ -969,7 +977,7 @@ button {
 }
 
 .course {
-  margin: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: row;
   background-color: #fff;
