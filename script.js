@@ -288,6 +288,18 @@ function setupSpaNavigation() {
   });
 }
 
+function refreshSwiperImages(swiperInstance) {
+  const now = Date.now();
+  swiperInstance.slides.forEach(slide => {
+    const img = slide.querySelector("img");
+    if (img && img.src) {
+      const url = new URL(img.src);
+      url.searchParams.set("t", now); // Agrega un timestamp único
+      img.src = url.toString();
+    }
+  });
+}
+
 // --- EVENTO PRINCIPAL ---
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -328,7 +340,35 @@ window.addEventListener('DOMContentLoaded', () => {
   btnCarrito.addEventListener("click", () => {
     carritoFlotante.style.display = "block";
   });
+
+
+   // 1. Inicializar Swiper
+  window.mySwiper = new Swiper('.swiper', {
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
+  });
+
+  // 2. Refrescar imágenes del Swiper al recargar la página (evita cache)
+  refreshSwiperImages(window.mySwiper);
+
+
+
 });
+
+
+
+
 
 // Exponer funciones globalmente para que funcionen los botones en el HTML
 window.addToCart = addToCart;
