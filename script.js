@@ -233,19 +233,44 @@ function renderPage(list) {
   const end = page * pageSize;
   const chunk = list.slice(start, end);
 
-  chunk.forEach(product => {
-    const cleanName = product.name.replace(/\s+/g, " ").trim();
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img src="${product.image}" alt="${cleanName}" loading="lazy">
-      <h3>${cleanName}</h3>
-      <p>Categoría: ${product.category}</p>
-      <p>Código: ${product.code}</p>
-      <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
-    `;
-    catalog.appendChild(card);
-  });
+  let i = 0;
+
+  function renderBatch() {
+    const batch = chunk.slice(i, i + 20);
+
+    batch.forEach(product => {
+      const cleanName = product.name.replace(/\s+/g, " ").trim();
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.display = "none"; // Oculta hasta que cargue la imagen
+
+      card.innerHTML = `
+        <img src="${product.image}" alt="${cleanName}" loading="lazy">
+        <h3>${cleanName}</h3>
+        <p>Categoría: ${product.category}</p>
+        <p>Código: ${product.code}</p>
+        <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
+      `;
+
+      const img = card.querySelector("img");
+      img.onload = () => {
+        card.style.display = ""; // Mostrar tarjeta cuando imagen esté cargada
+        catalog.appendChild(card);
+      };
+      img.onerror = () => {
+        img.src = "img/sinimagen.jpg"; // Imagen alternativa si falla
+        card.style.display = "";
+        catalog.appendChild(card);
+      };
+    });
+
+    i += 20;
+    if (i < chunk.length) {
+      setTimeout(renderBatch, 0);
+    }
+  }
+
+  renderBatch();
 
   const totalPages = Math.ceil(list.length / pageSize);
   if (page < totalPages && !document.getElementById("btnLoadMore")) {
@@ -257,6 +282,7 @@ function renderPage(list) {
     });
   }
 }
+
 
 // Búsqueda con debounce
 function debounce(fn, delay) {
