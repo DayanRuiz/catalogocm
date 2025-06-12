@@ -146,13 +146,17 @@ function cacheExpirado(horas = 12) {
 // Cargar productos async usando modular Firebase
 async function cargarProductos() {
   try {
-    loadingIndicator.style.display = 'block';  // <-- Mostrar loading
+    loadingIndicator.style.display = 'block';
 
     const productosGuardados = localStorage.getItem("productos_light");
 
     if (productosGuardados && !cacheExpirado()) {
       const productosLight = JSON.parse(productosGuardados);
+      products = productosLight.map(p => ({ ...p, image: "img/cargando.jpg" }));
 
+      renderProducts(); // Muestra primero sin imágenes
+
+      // Carga imágenes reales después
       const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
 
@@ -161,9 +165,8 @@ async function cargarProductos() {
         image: data[p.code]?.image || "img/sinimagen.jpg"
       }));
 
-      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
+      // Re-renderiza con imágenes reales
       renderProducts();
-
     } else {
       const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
@@ -184,11 +187,13 @@ async function cargarProductos() {
       localStorage.setItem("productos_light", JSON.stringify(productosLight));
       localStorage.setItem("productos_timestamp", Date.now().toString());
 
-      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
       renderProducts();
     }
+
+    loadingIndicator.style.display = 'none';
+
   } catch (error) {
-    loadingIndicator.style.display = 'none';  // <-- Ocultar loading también en error
+    loadingIndicator.style.display = 'none';
     console.error("Error cargando productos:", error);
   }
 }
