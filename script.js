@@ -233,44 +233,39 @@ function renderPage(list) {
   const end = page * pageSize;
   const chunk = list.slice(start, end);
 
-  let i = 0;
+  chunk.forEach(product => {
+    const cleanName = product.name.replace(/\s+/g, " ").trim();
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.display = "none"; // Oculta hasta que la imagen cargue
 
-  function renderBatch() {
-    const batch = chunk.slice(i, i + 20);
+    card.innerHTML = `
+      <img src="${product.image}" alt="${cleanName}" loading="lazy">
+      <h3>${cleanName}</h3>
+      <p>Categoría: ${product.category}</p>
+      <p>Código: ${product.code}</p>
+      <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
+    `;
 
-    batch.forEach(product => {
-      const cleanName = product.name.replace(/\s+/g, " ").trim();
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.display = "none"; // Oculta hasta que cargue la imagen
+    const img = card.querySelector("img");
 
-      card.innerHTML = `
-        <img src="${product.image}" alt="${cleanName}" loading="lazy">
-        <h3>${cleanName}</h3>
-        <p>Categoría: ${product.category}</p>
-        <p>Código: ${product.code}</p>
-        <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
-      `;
+    // Mostrar la tarjeta solo cuando la imagen esté completamente cargada
+    const showCard = () => {
+      card.style.display = "";
+      catalog.appendChild(card);
+    };
 
-      const img = card.querySelector("img");
-      img.onload = () => {
-        card.style.display = ""; // Mostrar tarjeta cuando imagen esté cargada
-        catalog.appendChild(card);
-      };
+    // Si ya está cargada desde caché
+    if (img.complete && img.naturalHeight !== 0) {
+      requestAnimationFrame(showCard);
+    } else {
+      img.onload = showCard;
       img.onerror = () => {
-        img.src = "img/sinimagen.jpg"; // Imagen alternativa si falla
-        card.style.display = "";
-        catalog.appendChild(card);
+        img.src = "img/sinimagen.jpg";
+        requestAnimationFrame(showCard);
       };
-    });
-
-    i += 20;
-    if (i < chunk.length) {
-      setTimeout(renderBatch, 0);
     }
-  }
-
-  renderBatch();
+  });
 
   const totalPages = Math.ceil(list.length / pageSize);
   if (page < totalPages && !document.getElementById("btnLoadMore")) {
@@ -282,6 +277,8 @@ function renderPage(list) {
     });
   }
 }
+
+
 
 
 // Búsqueda con debounce
