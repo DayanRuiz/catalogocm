@@ -13,18 +13,20 @@ btnLoadMore.textContent = "Cargar más";
 const loadingIndicator = document.getElementById('loadingIndicator');
 const productCatalog = document.getElementById('productCatalog');
 
-// Config Swiper
-const swiper = new Swiper('.swiper', {
-  loop: true,
-  pagination: {
-    el: '.swiper-pagination',
-    clickable: true,
-  },
-  autoplay: {
-    delay: 3000,
-    disableOnInteraction: false,
-  },
-});
+
+
+function refreshSwiperImages(swiperInstance) {
+  // Recorre todas las imágenes del swiper
+  document.querySelectorAll('.swiper .swiper-slide img').forEach(img => {
+    // Obtén la URL base (sin parámetros)
+    const base = img.src.split('?')[0];
+    // Vuelve a escribir el src con un timestamp para forzar recarga
+    img.src = `${base}?t=${Date.now()}`;
+  });
+  // Dile a Swiper que vuelva a calcular tamaños, slides, etc.
+  swiperInstance.update();  
+}
+
 
 // Mostrar secciones
 function showSection(sectionId) {
@@ -290,6 +292,25 @@ function setupSpaNavigation() {
 
 // --- EVENTO PRINCIPAL ---
 window.addEventListener('DOMContentLoaded', () => {
+
+   refreshSwiperImages();
+
+  // 3) Inicializar Swiper después de recargar imágenes
+  window.mySwiper = new Swiper('.swiper', {
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
+  });
 
   // Inicializar navegación SPA
   setupSpaNavigation();
