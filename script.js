@@ -380,6 +380,8 @@ window.mostrarVendedores = mostrarVendedores;
 window.cerrarVendedores = cerrarVendedores;
 window.enviarPorWhatsApp = enviarPorWhatsApp;
 window.closeAlert = closeAlert;
+window.forzarActualizacion = forzarActualizacion;
+
 
 
 
