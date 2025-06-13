@@ -133,3 +133,6 @@ export function showCustomAlert(message) {
   alertBox.style.display = "block";
   setTimeout(() => alertBox.style.display = "none", 5000);
 }
+
+cargarProductos();
+renderCarrito();
