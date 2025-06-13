@@ -11,63 +11,42 @@ const vendedoresFlotante = document.getElementById("vendedoresFlotante");
 const btnLoadMore = document.createElement("button");
 btnLoadMore.textContent = "Cargar más";
 const loadingIndicator = document.getElementById('loadingIndicator');
-const productCatalog = document.getElementById('productCatalog');
 
-// Config Swiper
+// Swiper
 const swiper = new Swiper('.swiper', {
   loop: true,
-  pagination: {
-    el: '.swiper-pagination',
-    clickable: true,
-  },
-  autoplay: {
-    delay: 3000,
-    disableOnInteraction: false,
-  },
+  pagination: { el: '.swiper-pagination', clickable: true },
+  autoplay: { delay: 3000, disableOnInteraction: false },
 });
 
-// Mostrar secciones
+// Secciones SPA
 function showSection(sectionId) {
-  document.querySelectorAll(".section").forEach(section => {
-    section.classList.remove("active");
-  });
-
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   const target = document.getElementById(sectionId);
   if (target) target.classList.add("active");
-
   document.querySelectorAll(".nav-links a").forEach(link => {
     link.classList.remove("active-link");
-    const href = link.getAttribute("href");
-    if (href === `#${sectionId}`) {
-      link.classList.add("active-link");
-    }
+    if (link.getAttribute("href") === `#${sectionId}`) link.classList.add("active-link");
   });
 }
 
 // Carrito
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-function addToCart(productName, productCode) {
-  if (carrito.some(product => product.code === productCode)) {
-    showCustomAlert(`El producto "${productName}" ya está en el carrito.`);
-    return;
-  }
-
-  carrito.push({ name: productName, code: productCode });
+function addToCart(name, code) {
+  if (carrito.some(p => p.code === code)) return showCustomAlert(`El producto "${name}" ya está en el carrito.`);
+  carrito.push({ name, code });
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  showCustomAlert(`Producto "${productName}" agregado al carrito.`);
+  showCustomAlert(`Producto "${name}" agregado al carrito.`);
   renderCarrito();
 }
 
 function renderCarrito() {
   carritoProductos.innerHTML = "";
-  carrito.forEach((product, index) => {
+  carrito.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = "carrito-producto";
-    div.innerHTML = `
-      <span>${product.code} - ${product.name}</span>
-      <button onclick="removeFromCart(${index})">Eliminar</button>
-    `;
+    div.innerHTML = `<span>${p.code} - ${p.name}</span><button onclick="removeFromCart(${i})">Eliminar</button>`;
     carritoProductos.appendChild(div);
   });
 }
@@ -78,46 +57,31 @@ function removeFromCart(index) {
   renderCarrito();
 }
 
-function cerrarCarrito() {
-  carritoFlotante.style.display = "none";
+// Otros paneles
+function cerrarCarrito() { carritoFlotante.style.display = "none"; }
+function mostrarVendedores() { vendedoresFlotante.style.display = "block"; }
+function cerrarVendedores() { vendedoresFlotante.style.display = "none"; }
+
+function enviarPorWhatsApp(numero) {
+  const mensaje = `👋 Hola, he visto tu *Catálogo virtual.*\n🛍️ Productos:\n${carrito.map(p => `${p.code} - ${p.name}`).join("\n")}`;
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
 }
 
-// Vendedores
-function mostrarVendedores() {
-  vendedoresFlotante.style.display = "block";
-}
-
-function cerrarVendedores() {
-  vendedoresFlotante.style.display = "none";
-}
-
-function enviarPorWhatsApp(numeroVendedor) {
-  const mensaje = `👋 Hola, he visto tu *Catálogo virtual.*\n¿Podrías brindarme más detalles?\n🛍️ Productos:\n\n` +
-    carrito.map(p => `${p.code} - ${p.name}`).join("\n");
-  const url = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, "_blank");
-}
-
-// Alerta personalizada
+// Alertas
 function showCustomAlert(message) {
   const alertBox = document.getElementById("customAlert");
   alertBox.querySelector("p")?.remove();
-
-  const messageElement = document.createElement("p");
-  messageElement.textContent = message;
-  alertBox.insertBefore(messageElement, alertBox.firstChild);
+  const p = document.createElement("p");
+  p.textContent = message;
+  alertBox.insertBefore(p, alertBox.firstChild);
   alertBox.style.display = "block";
-
-  setTimeout(() => {
-    alertBox.style.display = "none";
-  }, 5000);
+  setTimeout(() => alertBox.style.display = "none", 5000);
 }
-
 function closeAlert() {
   document.getElementById("customAlert").style.display = "none";
 }
 
-// Firebase config
+// Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
   authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
@@ -129,7 +93,6 @@ const firebaseConfig = {
   measurementId: "G-BBN29KMY8Z"
 };
 
-// Inicializar Firebase app y base de datos
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
@@ -138,74 +101,48 @@ let page = 1;
 const pageSize = 100;
 
 function cacheExpirado(horas = 12) {
-  const timestamp = localStorage.getItem("productos_timestamp");
-  if (!timestamp) return true;
-  return (Date.now() - parseInt(timestamp)) > horas * 60 * 60 * 1000;
+  const ts = localStorage.getItem("productos_timestamp");
+  return !ts || (Date.now() - parseInt(ts)) > horas * 3600000;
 }
 
-// Cargar productos async usando modular Firebase
+// Carga de productos optimizada
 async function cargarProductos() {
   try {
     loadingIndicator.style.display = 'block';
-
     const productosGuardados = localStorage.getItem("productos_light");
 
     if (productosGuardados && !cacheExpirado()) {
-      const productosLight = JSON.parse(productosGuardados);
-      products = productosLight.map(p => ({ ...p, image: "img/cargando.jpg" }));
+      const light = JSON.parse(productosGuardados);
+      products = light.map(p => ({ ...p, image: "img/cargando.jpg" }));
+      renderProducts();
 
-      renderProducts(); // Muestra primero sin imágenes
-
-      // Carga imágenes reales después
-      const snapshot = await get(ref(database, "productos"));
-      const data = snapshot.val();
-
-      products = productosLight.map(p => ({
-        ...p,
-        image: data[p.code]?.image || "img/sinimagen.jpg"
-      }));
-
-      // Re-renderiza con imágenes reales
+      // Cargar imágenes reales en segundo plano
+      const snap = await get(ref(database, "productos"));
+      const data = snap.val();
+      products.forEach(p => { p.image = data[p.code]?.image || "img/sinimagen.jpg"; });
       renderProducts();
     } else {
-      const snapshot = await get(ref(database, "productos"));
-      const data = snapshot.val();
-
-      products = Object.keys(data).map(key => ({
-        name: data[key].name,
-        category: data[key].category,
-        code: key,
-        image: data[key].image || "img/sinimagen.jpg",
+      const snap = await get(ref(database, "productos"));
+      const data = snap.val();
+      products = Object.keys(data).map(k => ({
+        name: data[k].name,
+        category: data[k].category,
+        code: k,
+        image: data[k].image || "img/sinimagen.jpg"
       }));
-
-      const productosLight = products.map(p => ({
-        name: p.name,
-        category: p.category,
-        code: p.code
-      }));
-
-      localStorage.setItem("productos_light", JSON.stringify(productosLight));
+      const light = products.map(p => ({ name: p.name, category: p.category, code: p.code }));
+      localStorage.setItem("productos_light", JSON.stringify(light));
       localStorage.setItem("productos_timestamp", Date.now().toString());
-
       renderProducts();
     }
-
     loadingIndicator.style.display = 'none';
-
-  } catch (error) {
+  } catch (err) {
     loadingIndicator.style.display = 'none';
-    console.error("Error cargando productos:", error);
+    console.error("Error cargando productos:", err);
   }
 }
 
-
-function forzarActualizacion() {
-  localStorage.removeItem("productos_light");
-  localStorage.removeItem("productos_timestamp");
-  cargarProductos();
-}
-
-// Renderizado de productos
+// Renderizado de productos con paginación
 function renderProducts(filter = "") {
   catalog.innerHTML = "";
   page = 1;
@@ -229,59 +166,67 @@ function renderProducts(filter = "") {
 }
 
 function renderPage(list) {
-  const start = (page - 1) * pageSize;
-  const end = page * pageSize;
-  const chunk = list.slice(start, end);
+  const chunk = list.slice((page - 1) * pageSize, page * pageSize);
 
-  chunk.forEach(product => {
-    const cleanName = product.name.replace(/\s+/g, " ").trim();
+  chunk.forEach(p => {
+    const cleanName = p.name.replace(/\s+/g, " ").trim();
     const card = document.createElement("div");
     card.className = "card";
-    card.style.display = "none"; // Oculta hasta que la imagen cargue
-
+    card.style.display = "none";
     card.innerHTML = `
-      <img src="${product.image}" alt="${cleanName}" loading="lazy">
+      <img src="${p.image}" alt="${cleanName}" loading="lazy">
       <h3>${cleanName}</h3>
-      <p>Categoría: ${product.category}</p>
-      <p>Código: ${product.code}</p>
-      <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
-    `;
+      <p>Categoría: ${p.category}</p>
+      <p>Código: ${p.code}</p>
+      <button onclick="addToCart('${cleanName}','${p.code}')">+</button>`;
 
     const img = card.querySelector("img");
+    img.onload = () => { card.style.display = ""; catalog.appendChild(card); };
+    img.onerror = () => { img.src = "img/sinimagen.jpg"; card.style.display = ""; catalog.appendChild(card); };
 
-    // Mostrar la tarjeta solo cuando la imagen esté completamente cargada
-    const showCard = () => {
-      card.style.display = "";
-      catalog.appendChild(card);
-    };
-
-    // Si ya está cargada desde caché
     if (img.complete && img.naturalHeight !== 0) {
-      requestAnimationFrame(showCard);
-    } else {
-      img.onload = showCard;
-      img.onerror = () => {
-        img.src = "img/sinimagen.jpg";
-        requestAnimationFrame(showCard);
-      };
+      requestAnimationFrame(() => { card.style.display = ""; catalog.appendChild(card); });
     }
   });
 
-  const totalPages = Math.ceil(list.length / pageSize);
-  if (page < totalPages && !document.getElementById("btnLoadMore")) {
+  if (page < Math.ceil(list.length / pageSize)) {
     catalog.after(btnLoadMore);
-    btnLoadMore.addEventListener("click", () => {
+    btnLoadMore.onclick = () => {
       page++;
       renderPage(list);
-      if (page >= totalPages) btnLoadMore.remove();
-    });
+      if (page * pageSize >= list.length) btnLoadMore.remove();
+    };
   }
 }
 
+// Navegación SPA
+function setupSpaNavigation() {
+  window.addEventListener("hashchange", () => {
+    const hash = location.hash.replace("#", "");
+    if (hash) {
+      showSection(hash);
+      if (hash === "productos") renderProducts(document.getElementById("searchInput")?.value || "");
+    }
+  });
 
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      window.location.hash = link.getAttribute("href").replace("#", "");
+    });
+  });
+}
 
+// Swiper images refresher
+function refreshSwiperImages(swiper) {
+  const now = Date.now();
+  swiper.slides.forEach(slide => {
+    const img = slide.querySelector("img");
+    if (img?.src) img.src = new URL(img.src).toString() + `?t=${now}`;
+  });
+}
 
-// Búsqueda con debounce
+// Debounce para búsqueda
 function debounce(fn, delay) {
   let timeout;
   return (...args) => {
@@ -290,115 +235,36 @@ function debounce(fn, delay) {
   };
 }
 
-// --- SPA: Navegación sin recarga ---
-
-function setupSpaNavigation() {
-  // Controlar hashchange para mostrar sección
-  window.addEventListener("hashchange", () => {
-    const sectionFromHash = window.location.hash.replace("#", "");
-    if (sectionFromHash) {
-      showSection(sectionFromHash);
-
-      if (sectionFromHash === "productos") {
-        const searchInput = document.getElementById("searchInput");
-        renderProducts(searchInput ? searchInput.value : "");
-      }
-    }
-  });
-
-  // Modificar comportamiento enlaces para evitar recarga o scroll automático
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      const target = link.getAttribute("href").replace("#", "");
-      window.location.hash = target;
-    });
-  });
-}
-
-function refreshSwiperImages(swiperInstance) {
-  const now = Date.now();
-  swiperInstance.slides.forEach(slide => {
-    const img = slide.querySelector("img");
-    if (img && img.src) {
-      const url = new URL(img.src);
-      url.searchParams.set("t", now); // Agrega un timestamp único
-      img.src = url.toString();
-    }
-  });
-}
-
-// --- EVENTO PRINCIPAL ---
-window.addEventListener('DOMContentLoaded', () => {
-
-  // Inicializar navegación SPA
+// Init app
+window.addEventListener("DOMContentLoaded", () => {
   setupSpaNavigation();
+  const hash = location.hash.replace("#", "");
+  showSection(hash || "inicio");
 
-  // Mostrar sección inicial
-  const sectionFromHash = window.location.hash.replace('#', '');
-  if (sectionFromHash) {
-    showSection(sectionFromHash);
-
-    if (sectionFromHash === "productos") {
-      const searchInput = document.getElementById("searchInput");
-      renderProducts(searchInput ? searchInput.value : "");
-    }
-  } else {
-    // Muestra sección por defecto si no hay hash (ajusta a tu sección por defecto)
-    showSection("inicio");
+  if (hash === "productos") {
+    renderProducts(document.getElementById("searchInput")?.value || "");
   }
 
-  // Carga productos si no cargados
-  if (!products.length) {
-    cargarProductos();
-  }
-
-  // Renderizar carrito guardado
+  if (!products.length) cargarProductos();
   renderCarrito();
 
-  // Escuchar búsqueda con debounce
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) {
-    searchInput.addEventListener("input", debounce(() => {
-      renderProducts(searchInput.value);
-    }, 300));
-  }
+  document.getElementById("searchInput")?.addEventListener("input", debounce(() => {
+    renderProducts(searchInput.value);
+  }, 300));
 
-  // Mostrar carrito al hacer clic
-  btnCarrito.addEventListener("click", () => {
-    carritoFlotante.style.display = "block";
-  });
+  btnCarrito.addEventListener("click", () => carritoFlotante.style.display = "block");
 
-
-   // 1. Inicializar Swiper
   window.mySwiper = new Swiper('.swiper', {
     loop: true,
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev'
-    }
+    autoplay: { delay: 3000, disableOnInteraction: false },
+    pagination: { el: '.swiper-pagination', clickable: true },
+    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
   });
 
-  // 2. Refrescar imágenes del Swiper al recargar la página (evita cache)
   refreshSwiperImages(window.mySwiper);
-
-
-
 });
 
-
-
-
-
-// Exponer funciones globalmente para que funcionen los botones en el HTML
+// Exponer funciones globales
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.cerrarCarrito = cerrarCarrito;
