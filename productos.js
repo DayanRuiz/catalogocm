@@ -134,5 +134,38 @@ export function showCustomAlert(message) {
   setTimeout(() => alertBox.style.display = "none", 5000);
 }
 
+
+
+function mostrarSeccion(id) {
+  const secciones = document.querySelectorAll('.section');
+  secciones.forEach(sec => sec.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.replace('#', '') || 'productos';
+  mostrarSeccion(hash);
+});
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '') || 'productos';
+  mostrarSeccion(hash);
+});
+
+function cerrarSesion() {
+  localStorage.removeItem("rucRegistrado");
+  localStorage.removeItem("usernameRegistrado");
+  window.location.href = "index.html";
+}
+
+const ruc = localStorage.getItem("rucRegistrado");
+const username = localStorage.getItem("usernameRegistrado");
+document.getElementById("rucMostrado").textContent = ruc || "No disponible";
+document.getElementById("usernameMostrado").textContent = username || "No disponible";
+
+function forzarActualizacion() {
+  alert("Función de actualización del catálogo activada");
+}
+
 cargarProductos();
 renderCarrito();

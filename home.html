@@ -13,7 +13,7 @@
 
 <body>
 
-  <!-- NAVa -->
+  <!-- NAV -->
   <nav id="main-nav">
     <div class="nav-content">
       <img src="images/logo.png" alt="Logo Corporación Mamani" class="logo" />
@@ -25,7 +25,6 @@
         <a href="#contacto" onclick="mostrarSeccion('contacto')" aria-label="Contacto">
           <i class="fas fa-envelope"></i>
         </a>
-
       </div>
     </div>
   </nav>
@@ -34,6 +33,7 @@
 
     <!-- SECCIÓN PRODUCTOS -->
     <section id="productos" class="section active">
+
       <!-- ALERTA PERSONALIZADA -->
       <div class="custom-alert" id="customAlert">
         <button class="alert-close-btn" onclick="closeAlert()">Aceptar</button>
@@ -42,7 +42,7 @@
       <!-- BOTÓN CARRITO -->
       <button id="btnCarrito"><i class="fas fa-shopping-cart"></i></button>
 
-      <!-- Swiper -->
+      <!-- SWIPER -->
       <div class="swiper section-info">
         <div class="swiper-wrapper">
           <div class="swiper-slide"><img src="https://res.cloudinary.com/deixrzgv0/image/upload/page1_iwc5tq.png" alt="Promoción 1"></div>
@@ -52,20 +52,19 @@
         <div class="swiper-pagination"></div>
       </div>
 
-      <h3 class="nav-links-name" >Catálogo de Productos de Limpieza</h3>
+      <h3 class="nav-links-name">Catálogo de Productos de Limpieza</h3>
 
       <!-- BÚSQUEDA -->
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, categoría o código...">
       </div>
 
-      <!-- Indicador de carga -->
+      <!-- INDICADOR DE CARGA -->
       <div id="loadingIndicator" class="loading-indicator" style="display:none;">
         <button disabled>
           <i class="fas fa-spinner fa-spin"></i> Cargando productos...
         </button>
       </div>
-
 
       <!-- CATÁLOGO -->
       <div class="catalog" id="productCatalog"></div>
@@ -100,68 +99,61 @@
         </div>
         <button class="btn_inicio_cerrar" onclick="cerrarVendedores()">Cerrar</button>
       </div>
+
     </section>
 
     <!-- SECCIÓN CONTACTO -->
     <section id="contacto" class="section" style="display:none;">
       <div class="courses-container">
         <div class="course">
-
           <div class="course-preview">
             <h6>Call Center</h6>
             <h2>Llámanos</h2>
             <a href="#">Envíos a Provincia y Domicilio <i class="fas fa-chevron-right"></i></a>
           </div>
-
           <div class="course-info">
             <h6>Precios Especiales</h6>
             <h2>Ventas al por mayor</h2>
             <ul>
               <li class="lista">📞 Telf: <a href="tel:+51958368175">+51 958 368 175</a></li>
               <li class="lista">📞 Telf: <a href="tel:+51941104511">+51 941 104 511</a></li>
-              <li class="lista">📧 Email: <a href="mailto:ventas@corporacionmamani.com">ventas@corporacionmamani.com</a>
-              </li>
+              <li class="lista">📧 Email: <a href="mailto:ventas@corporacionmamani.com">ventas@corporacionmamani.com</a></li>
             </ul>
           </div>
-
         </div>
       </div>
 
       <div class="courses-container">
         <div class="course">
-
           <div class="course-preview">
             <h6>TIENDAS</h6>
             <h2>Visítanos</h2>
             <a href="#">¡Te esperamos! <i class="fas fa-chevron-right"></i></a>
           </div>
-
           <div class="course-info">
             <h6>Venta Directa</h6>
             <h2>Mina de Oro</h2>
             <ul>
               <li class="lista">📞 Contacto: <a href="tel:+51960908517">+51 960 908 517</a></li>
-              <li class="lista">📍 Dirección: Jr. Cuzco Nro 752 Int 127 1er Piso Galeria Mina de Oro II Lima-Lima-Lima
-              </li>
+              <li class="lista">📍 Dirección: Jr. Cuzco Nro 752 Int 127 1er Piso Galeria Mina de Oro II Lima-Lima-Lima</li>
               <li class="lista">🕒 Horario: Lunes a Sábado, 9:00 AM - 8:00 PM</li>
-
-              <h2>Capon Center</h2>
+            </ul>
+            <h2>Capon Center</h2>
+            <ul>
               <li class="lista">📞 Contacto: <a href="tel:+51960903422">+51 960 903 422</a></li>
               <li class="lista">📍 Dirección: Jr. Cuzco Nro 783 Int 1024 Zotano Galeria Capon Center Lima-Lima-Lima</li>
               <li class="lista">🕒 Horario: Lunes a Sábado, 9:00 AM - 8:00 PM</li>
             </ul>
           </div>
-
         </div>
       </div>
 
       <div class="courses-container">
-  <p class="nav-links-name">
-    <span id="usernameMostrado"></span>
-    <span id="rucMostrado"></span>
-  </p>
-</div>
-
+        <p class="nav-links-name">
+          <span id="usernameMostrado"></span>
+          <span id="rucMostrado"></span>
+        </p>
+      </div>
 
       <button class="btn_inicio_cerrar" onclick="cerrarSesion()">Cerrar sesión</button>
       <button class="btn_inicio_cerrar" onclick="forzarActualizacion()">🔄 Actualizar catálogo</button>
@@ -169,53 +161,15 @@
 
   </div>
 
-  <!-- SWIPER JS -->
+  <!-- LIBRERÍAS -->
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
-  <!-- TU SCRIPT PRINCIPAL COMO MÓDULO -->
-<script type="module" src="firebase.js"></script>
-<script type="module" src="carrito.js"></script>
-<script type="module" src="productos.js"></script>
+  <!-- SCRIPTS MODULARES -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="carrito.js"></script>
+  <script type="module" src="productos.js"></script>
 
-
-  <script>
-    function mostrarSeccion(id) {
-      const secciones = document.querySelectorAll('.section');
-      secciones.forEach(sec => sec.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
-
-    // Mostrar la sección según el hash de URL o la sección productos por defecto
-    window.addEventListener('DOMContentLoaded', () => {
-      const hash = window.location.hash.replace('#', '') || 'productos';
-      mostrarSeccion(hash);
-    });
-
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.replace('#', '') || 'productos';
-      mostrarSeccion(hash);
-    });
-
-    // Cerrar sesión (localStorage)
-    function cerrarSesion() {
-      localStorage.removeItem("rucRegistrado");
-      localStorage.removeItem("usernameRegistrado");
-      window.location.href = "index.html"; // Ajusta según tu lógica
-    }
-
-    // Mostrar datos guardados en localStorage
-    const ruc = localStorage.getItem("rucRegistrado");
-    const username = localStorage.getItem("usernameRegistrado");
-    document.getElementById("rucMostrado").textContent = ruc || "No disponible";
-    document.getElementById("usernameMostrado").textContent = username || "No disponible";
-
-    // Función ejemplo que puedes implementar para forzar actualizar catálogo
-    function forzarActualizacion() {
-      // Aquí, por ejemplo, podrías llamar a una función para recargar datos desde Firebase
-      alert("Función de actualización del catálogo activada");
-    }
-  </script>
 
 </body>
-
 </html>
+

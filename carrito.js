@@ -21,3 +21,5 @@ export function removeFromCart(index, renderCarritoCallback) {
   localStorage.setItem("carrito", JSON.stringify(carrito));
   renderCarritoCallback();
 }
+
+
