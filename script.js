@@ -119,14 +119,23 @@ function closeAlert() {
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
-  authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
-  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
-  projectId: "catalogoproductos-a2ab0",
-  storageBucket: "catalogoproductos-a2ab0.appspot.com",
-  messagingSenderId: "998590972541",
-  appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
-  measurementId: "G-BBN29KMY8Z"
+
+  apiKey: "AIzaSyAMBAxNbb3WXS1-18TC0ODG57YrKwC68bw",
+  authDomain: "catalogo2025-b4bef.firebaseapp.com",
+  projectId: "catalogo2025-b4bef",
+  storageBucket: "catalogo2025-b4bef.firebasestorage.app",
+  messagingSenderId: "934674688854",
+  appId: "1:934674688854:web:f4fcb42cfa9b3f614a44f7"
+
+    
+
+
+ // databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
+ 
+ // storageBucket: "catalogoproductos-a2ab0.appspot.com",
+
+
+ // measurementId: "G-BBN29KMY8Z"
 };
 
 // Inicializar Firebase app y base de datos
