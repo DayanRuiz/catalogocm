@@ -1,22 +1,25 @@
-// productos.js
 import { cargarProductosDesdeFirebase } from "./firebase.js";
 import { addToCart, getCarrito, removeFromCart } from "./carrito.js";
 
+// --- Elementos del DOM ---
 const catalog = document.getElementById("productCatalog");
 const carritoProductos = document.getElementById("carritoProductos");
 const loadingIndicator = document.getElementById("loadingIndicator");
 const btnLoadMore = document.createElement("button");
 btnLoadMore.textContent = "Cargar más";
 
+// --- Variables de estado ---
 let products = [];
 let page = 1;
 const pageSize = 100;
 
+// --- Utilidades ---
 function cacheExpirado(horas = 12) {
   const ts = localStorage.getItem("productos_timestamp");
   return !ts || (Date.now() - parseInt(ts)) > horas * 3600000;
 }
 
+// --- Carga y renderizado de productos ---
 export async function cargarProductos() {
   try {
     loadingIndicator.style.display = 'block';
@@ -110,6 +113,7 @@ function renderPage(list) {
   }
 }
 
+// --- Carrito ---
 export function renderCarrito() {
   const carrito = getCarrito();
   carritoProductos.innerHTML = "";
@@ -124,6 +128,7 @@ export function renderCarrito() {
   });
 }
 
+// --- Alertas ---
 export function showCustomAlert(message) {
   const alertBox = document.getElementById("customAlert");
   alertBox.querySelector("p")?.remove();
@@ -134,8 +139,11 @@ export function showCustomAlert(message) {
   setTimeout(() => alertBox.style.display = "none", 5000);
 }
 
+window.closeAlert = function() {
+  document.getElementById("customAlert").style.display = "none";
+};
 
-
+// --- Navegación de secciones ---
 function mostrarSeccion(id) {
   const secciones = document.querySelectorAll('.section');
   secciones.forEach(sec => sec.style.display = 'none');
@@ -152,6 +160,7 @@ window.addEventListener('hashchange', () => {
   mostrarSeccion(hash);
 });
 
+// --- Sesión y usuario ---
 function cerrarSesion() {
   localStorage.removeItem("rucRegistrado");
   localStorage.removeItem("usernameRegistrado");
@@ -163,9 +172,57 @@ const username = localStorage.getItem("usernameRegistrado");
 document.getElementById("rucMostrado").textContent = ruc || "No disponible";
 document.getElementById("usernameMostrado").textContent = username || "No disponible";
 
+// --- Actualización de catálogo ---
 function forzarActualizacion() {
-  alert("Función de actualización del catálogo activada");
+  localStorage.removeItem("productos_light");
+  localStorage.removeItem("productos_timestamp");
+  cargarProductos();
+  showCustomAlert("Catálogo actualizado desde Firebase.");
 }
 
+// --- Carrito flotante ---
+function mostrarCarrito() {
+  document.getElementById("carritoFlotante").style.display = "block";
+}
+
+function cerrarCarrito() {
+  document.getElementById("carritoFlotante").style.display = "none";
+}
+
+// --- Vendedores flotante ---
+function mostrarVendedores() {
+  document.getElementById("vendedoresFlotante").style.display = "block";
+}
+
+function cerrarVendedores() {
+  document.getElementById("vendedoresFlotante").style.display = "none";
+}
+
+// --- WhatsApp ---
+function enviarPorWhatsApp(numeroVendedor) {
+  const carrito = getCarrito();
+  if (!carrito.length) {
+    showCustomAlert("El carrito está vacío.");
+    return;
+  }
+  let mensaje = "¡Hola! Quiero cotizar estos productos:%0A";
+  carrito.forEach(p => {
+    mensaje += `• ${p.name} (código: ${p.code}) x${p.cantidad}%0A`;
+  });
+  const url = `https://wa.me/${numeroVendedor}?text=${mensaje}`;
+  window.open(url, "_blank");
+}
+
+// --- Exponer funciones globales para el HTML ---
+window.mostrarSeccion = mostrarSeccion;
+window.cerrarSesion = cerrarSesion;
+window.forzarActualizacion = forzarActualizacion;
+window.mostrarCarrito = mostrarCarrito;
+window.cerrarCarrito = cerrarCarrito;
+window.mostrarVendedores = mostrarVendedores;
+window.cerrarVendedores = cerrarVendedores;
+window.enviarPorWhatsApp = enviarPorWhatsApp;
+
+// --- Inicialización ---
 cargarProductos();
 renderCarrito();
