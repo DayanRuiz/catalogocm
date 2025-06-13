@@ -1,2 +1,2 @@
 # catalogocm
-Catalogo de Productos Corporación Mamani 2025
+Catalogo de Productos Corporación Mamani
