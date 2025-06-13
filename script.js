@@ -373,7 +373,43 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
+ function mostrarSeccion(id) {
+      const secciones = document.querySelectorAll('.section');
+      secciones.forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
 
+    // Mostrar la sección según el hash de URL o la sección productos por defecto
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '') || 'productos';
+      mostrarSeccion(hash);
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '') || 'productos';
+      mostrarSeccion(hash);
+    });
+
+    // Cerrar sesión (localStorage)
+    function cerrarSesion() {
+      localStorage.removeItem("rucRegistrado");
+      localStorage.removeItem("usernameRegistrado");
+      window.location.href = "index.html"; // Ajusta según tu lógica
+    }
+
+    // Mostrar datos guardados en localStorage
+    const ruc = localStorage.getItem("rucRegistrado");
+    const username = localStorage.getItem("usernameRegistrado");
+    document.getElementById("rucMostrado").textContent = ruc || "No disponible";
+    document.getElementById("usernameMostrado").textContent = username || "No disponible";
+
+    // Función ejemplo que puedes implementar para forzar actualizar catálogo
+    function forzarActualizacion() {
+      // Aquí, por ejemplo, podrías llamar a una función para recargar datos desde Firebase
+      alert("Función de actualización del catálogo activada");
+    }
+
+    
 
 // Exponer funciones globalmente para que funcionen los botones en el HTML
 window.addToCart = addToCart;
