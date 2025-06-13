@@ -237,8 +237,6 @@ function renderPage(list) {
     const cleanName = product.name.replace(/\s+/g, " ").trim();
     const card = document.createElement("div");
     card.className = "card";
-    card.style.display = "none"; // Oculta hasta que la imagen cargue
-
     card.innerHTML = `
       <img src="${product.image}" alt="${cleanName}" loading="lazy">
       <h3>${cleanName}</h3>
@@ -246,25 +244,7 @@ function renderPage(list) {
       <p>Código: ${product.code}</p>
       <button onclick="addToCart('${cleanName}','${product.code}')">+</button>
     `;
-
-    const img = card.querySelector("img");
-
-    // Mostrar la tarjeta solo cuando la imagen esté completamente cargada
-    const showCard = () => {
-      card.style.display = "";
-      catalog.appendChild(card);
-    };
-
-    // Si ya está cargada desde caché
-    if (img.complete && img.naturalHeight !== 0) {
-      requestAnimationFrame(showCard);
-    } else {
-      img.onload = showCard;
-      img.onerror = () => {
-        img.src = "img/sinimagen.jpg";
-        requestAnimationFrame(showCard);
-      };
-    }
+    catalog.appendChild(card);
   });
 
   const totalPages = Math.ceil(list.length / pageSize);
@@ -277,9 +257,6 @@ function renderPage(list) {
     });
   }
 }
-
-
-
 
 // Búsqueda con debounce
 function debounce(fn, delay) {
