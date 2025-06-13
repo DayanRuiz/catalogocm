@@ -2,62 +2,31 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-// Referencias globales
+// Elementos globales
 const catalog = document.getElementById("productCatalog");
 const carritoFlotante = document.getElementById("carritoFlotante");
 const carritoProductos = document.getElementById("carritoProductos");
 const btnCarrito = document.getElementById("btnCarrito");
 const vendedoresFlotante = document.getElementById("vendedoresFlotante");
-const loadingIndicator = document.getElementById('loadingIndicator');
-const searchInput = document.getElementById("searchInput");
-
-// Crear botón cargar más
 const btnLoadMore = document.createElement("button");
 btnLoadMore.textContent = "Cargar más";
-btnLoadMore.id = "btnLoadMore";
+const loadingIndicator = document.getElementById('loadingIndicator');
+const productCatalog = document.getElementById('productCatalog');
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
-  authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
-  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
-  projectId: "catalogoproductos-a2ab0",
-  storageBucket: "catalogoproductos-a2ab0.appspot.com",
-  messagingSenderId: "998590972541",
-  appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
-  measurementId: "G-BBN29KMY8Z"
-};
+// Config Swiper
+const swiper = new Swiper('.swiper', {
+  loop: true,
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+  },
+  autoplay: {
+    delay: 3000,
+    disableOnInteraction: false,
+  },
+});
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-
-// Swiper config
-function setupSwiper() {
-  const swiperInstance = new Swiper('.swiper', {
-    loop: true,
-    autoplay: { delay: 3000, disableOnInteraction: false },
-    pagination: { el: '.swiper-pagination', clickable: true },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev'
-    }
-  });
-  refreshSwiperImages(swiperInstance);
-}
-
-function refreshSwiperImages(swiperInstance) {
-  const now = Date.now();
-  swiperInstance.slides.forEach(slide => {
-    const img = slide.querySelector("img");
-    if (img && img.src) {
-      const url = new URL(img.src);
-      url.searchParams.set("t", now);
-      img.src = url.toString();
-    }
-  });
-}
-
-// SPA
+// Mostrar secciones
 function showSection(sectionId) {
   document.querySelectorAll(".section").forEach(section => {
     section.classList.remove("active");
@@ -68,25 +37,10 @@ function showSection(sectionId) {
 
   document.querySelectorAll(".nav-links a").forEach(link => {
     link.classList.remove("active-link");
-    if (link.getAttribute("href") === `#${sectionId}`) {
+    const href = link.getAttribute("href");
+    if (href === `#${sectionId}`) {
       link.classList.add("active-link");
     }
-  });
-}
-
-function setupSpaNavigation() {
-  window.addEventListener("hashchange", () => {
-    const section = window.location.hash.replace("#", "") || "inicio";
-    showSection(section);
-    if (section === "productos") renderProducts(searchInput?.value || "");
-  });
-
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      const target = link.getAttribute("href").replace("#", "");
-      window.location.hash = target;
-    });
   });
 }
 
@@ -94,7 +48,7 @@ function setupSpaNavigation() {
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
 function addToCart(productName, productCode) {
-  if (carrito.some(p => p.code === productCode)) {
+  if (carrito.some(product => product.code === productCode)) {
     showCustomAlert(`El producto "${productName}" ya está en el carrito.`);
     return;
   }
@@ -132,9 +86,11 @@ function cerrarCarrito() {
 function mostrarVendedores() {
   vendedoresFlotante.style.display = "block";
 }
+
 function cerrarVendedores() {
   vendedoresFlotante.style.display = "none";
 }
+
 function enviarPorWhatsApp(numeroVendedor) {
   const mensaje = `👋 Hola, he visto tu *Catálogo virtual.*\n¿Podrías brindarme más detalles?\n🛍️ Productos:\n\n` +
     carrito.map(p => `${p.code} - ${p.name}`).join("\n");
@@ -146,71 +102,105 @@ function enviarPorWhatsApp(numeroVendedor) {
 function showCustomAlert(message) {
   const alertBox = document.getElementById("customAlert");
   alertBox.querySelector("p")?.remove();
+
   const messageElement = document.createElement("p");
   messageElement.textContent = message;
   alertBox.insertBefore(messageElement, alertBox.firstChild);
   alertBox.style.display = "block";
-  setTimeout(() => alertBox.style.display = "none", 5000);
+
+  setTimeout(() => {
+    alertBox.style.display = "none";
+  }, 5000);
 }
+
 function closeAlert() {
   document.getElementById("customAlert").style.display = "none";
 }
 
-// Productos
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCEwHQQwivIG_s0hJoTddVmXGzgABhUsG8",
+  authDomain: "catalogoproductos-a2ab0.firebaseapp.com",
+  databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
+  projectId: "catalogoproductos-a2ab0",
+  storageBucket: "catalogoproductos-a2ab0.appspot.com",
+  messagingSenderId: "998590972541",
+  appId: "1:998590972541:web:6c3a56d94a4e39b6822714",
+  measurementId: "G-BBN29KMY8Z"
+};
+
+// Inicializar Firebase app y base de datos
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 let products = [];
 let page = 1;
 const pageSize = 100;
 
 function cacheExpirado(horas = 12) {
   const timestamp = localStorage.getItem("productos_timestamp");
-  return !timestamp || (Date.now() - parseInt(timestamp)) > horas * 3600000;
+  if (!timestamp) return true;
+  return (Date.now() - parseInt(timestamp)) > horas * 60 * 60 * 1000;
 }
 
+// Cargar productos async usando modular Firebase
 async function cargarProductos() {
   try {
-    loadingIndicator.style.display = 'block';
+    loadingIndicator.style.display = 'block';  // <-- Mostrar loading
+
     const productosGuardados = localStorage.getItem("productos_light");
 
     if (productosGuardados && !cacheExpirado()) {
       const productosLight = JSON.parse(productosGuardados);
-      products = productosLight.map(p => ({ ...p, image: "img/cargando.jpg" }));
-      renderProducts(); // primero sin imágenes
 
       const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
 
       products = productosLight.map(p => ({
         ...p,
-        image: data?.[p.code]?.image || "img/sinimagen.jpg"
+        image: data[p.code]?.image || "img/sinimagen.jpg"
       }));
-      renderProducts(); // luego con imágenes
+
+      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
+      renderProducts();
+
     } else {
       const snapshot = await get(ref(database, "productos"));
       const data = snapshot.val();
 
-      products = Object.entries(data).map(([key, val]) => ({
-        name: val.name,
-        category: val.category,
+      products = Object.keys(data).map(key => ({
+        name: data[key].name,
+        category: data[key].category,
         code: key,
-        image: val.image || "img/sinimagen.jpg"
+        image: data[key].image || "img/sinimagen.jpg",
       }));
 
       const productosLight = products.map(p => ({
-        name: p.name, category: p.category, code: p.code
+        name: p.name,
+        category: p.category,
+        code: p.code
       }));
 
       localStorage.setItem("productos_light", JSON.stringify(productosLight));
       localStorage.setItem("productos_timestamp", Date.now().toString());
 
+      loadingIndicator.style.display = 'none'; // <-- Ocultar loading
       renderProducts();
     }
   } catch (error) {
+    loadingIndicator.style.display = 'none';  // <-- Ocultar loading también en error
     console.error("Error cargando productos:", error);
-  } finally {
-    loadingIndicator.style.display = 'none';
   }
 }
 
+
+function forzarActualizacion() {
+  localStorage.removeItem("productos_light");
+  localStorage.removeItem("productos_timestamp");
+  cargarProductos();
+}
+
+// Renderizado de productos
 function renderProducts(filter = "") {
   catalog.innerHTML = "";
   page = 1;
@@ -239,7 +229,7 @@ function renderPage(list) {
   const chunk = list.slice(start, end);
 
   chunk.forEach(product => {
-    const cleanName = product.name.trim();
+    const cleanName = product.name.replace(/\s+/g, " ").trim();
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -252,17 +242,18 @@ function renderPage(list) {
     catalog.appendChild(card);
   });
 
-  if (page * pageSize < list.length) {
+  const totalPages = Math.ceil(list.length / pageSize);
+  if (page < totalPages && !document.getElementById("btnLoadMore")) {
     catalog.after(btnLoadMore);
+    btnLoadMore.addEventListener("click", () => {
+      page++;
+      renderPage(list);
+      if (page >= totalPages) btnLoadMore.remove();
+    });
   }
 }
 
-btnLoadMore.addEventListener("click", () => {
-  page++;
-  renderPage(products);
-  if (page * pageSize >= products.length) btnLoadMore.remove();
-});
-
+// Búsqueda con debounce
 function debounce(fn, delay) {
   let timeout;
   return (...args) => {
@@ -271,46 +262,115 @@ function debounce(fn, delay) {
   };
 }
 
-function cerrarSesion() {
-  localStorage.removeItem("rucRegistrado");
-  localStorage.removeItem("usernameRegistrado");
-  window.location.href = "index.html";
+// --- SPA: Navegación sin recarga ---
+
+function setupSpaNavigation() {
+  // Controlar hashchange para mostrar sección
+  window.addEventListener("hashchange", () => {
+    const sectionFromHash = window.location.hash.replace("#", "");
+    if (sectionFromHash) {
+      showSection(sectionFromHash);
+
+      if (sectionFromHash === "productos") {
+        const searchInput = document.getElementById("searchInput");
+        renderProducts(searchInput ? searchInput.value : "");
+      }
+    }
+  });
+
+  // Modificar comportamiento enlaces para evitar recarga o scroll automático
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const target = link.getAttribute("href").replace("#", "");
+      window.location.hash = target;
+    });
+  });
 }
 
-// Mostrar usuario
-const ruc = localStorage.getItem("rucRegistrado");
-const username = localStorage.getItem("usernameRegistrado");
-const rucEl = document.getElementById("rucMostrado");
-const userEl = document.getElementById("usernameMostrado");
-if (rucEl) rucEl.textContent = ruc || "No disponible";
-if (userEl) userEl.textContent = username || "No disponible";
+function refreshSwiperImages(swiperInstance) {
+  const now = Date.now();
+  swiperInstance.slides.forEach(slide => {
+    const img = slide.querySelector("img");
+    if (img && img.src) {
+      const url = new URL(img.src);
+      url.searchParams.set("t", now); // Agrega un timestamp único
+      img.src = url.toString();
+    }
+  });
+}
 
-// Evento principal
-window.addEventListener("DOMContentLoaded", () => {
+// --- EVENTO PRINCIPAL ---
+window.addEventListener('DOMContentLoaded', () => {
+
+  // Inicializar navegación SPA
   setupSpaNavigation();
-  setupSwiper();
 
-  const section = window.location.hash.replace("#", "") || "inicio";
-  showSection(section);
-  if (section === "productos") renderProducts(searchInput?.value || "");
+  // Mostrar sección inicial
+  const sectionFromHash = window.location.hash.replace('#', '');
+  if (sectionFromHash) {
+    showSection(sectionFromHash);
 
-  cargarProductos();
+    if (sectionFromHash === "productos") {
+      const searchInput = document.getElementById("searchInput");
+      renderProducts(searchInput ? searchInput.value : "");
+    }
+  } else {
+    // Muestra sección por defecto si no hay hash (ajusta a tu sección por defecto)
+    showSection("inicio");
+  }
+
+  // Carga productos si no cargados
+  if (!products.length) {
+    cargarProductos();
+  }
+
+  // Renderizar carrito guardado
   renderCarrito();
 
+  // Escuchar búsqueda con debounce
+  const searchInput = document.getElementById("searchInput");
   if (searchInput) {
     searchInput.addEventListener("input", debounce(() => {
       renderProducts(searchInput.value);
     }, 300));
   }
 
-  if (btnCarrito) {
-    btnCarrito.addEventListener("click", () => {
-      carritoFlotante.style.display = "block";
-    });
-  }
+  // Mostrar carrito al hacer clic
+  btnCarrito.addEventListener("click", () => {
+    carritoFlotante.style.display = "block";
+  });
+
+
+   // 1. Inicializar Swiper
+  window.mySwiper = new Swiper('.swiper', {
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
+  });
+
+  // 2. Refrescar imágenes del Swiper al recargar la página (evita cache)
+  refreshSwiperImages(window.mySwiper);
+
+
+
 });
 
-// Exponer funciones globalmente
+
+
+
+
+// Exponer funciones globalmente para que funcionen los botones en el HTML
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.cerrarCarrito = cerrarCarrito;
@@ -318,11 +378,6 @@ window.mostrarVendedores = mostrarVendedores;
 window.cerrarVendedores = cerrarVendedores;
 window.enviarPorWhatsApp = enviarPorWhatsApp;
 window.closeAlert = closeAlert;
-window.forzarActualizacion = () => {
-  localStorage.removeItem("productos_light");
-  localStorage.removeItem("productos_timestamp");
-  cargarProductos();
-};
-window.cerrarSesion = cerrarSesion;
+
 
 
