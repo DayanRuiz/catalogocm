@@ -123,18 +123,11 @@ const firebaseConfig = {
   apiKey: "AIzaSyAMBAxNbb3WXS1-18TC0ODG57YrKwC68bw",
   authDomain: "catalogo2025-b4bef.firebaseapp.com",
   projectId: "catalogo2025-b4bef",
-  storageBucket: "catalogo2025-b4bef.firebasestorage.app",
+  storageBucket: "catalogo2025-b4bef.appspot.com",
   messagingSenderId: "934674688854",
-  appId: "1:934674688854:web:f4fcb42cfa9b3f614a44f7"
+  appId: "1:934674688854:web:f4fcb42cfa9b3f614a44f7",
 
-    
-
-
- // databaseURL: "https://catalogoproductos-a2ab0-default-rtdb.firebaseio.com",
- 
- // storageBucket: "catalogoproductos-a2ab0.appspot.com",
-
-
+ databaseURL: "https://catalogo2025-b4bef-default-rtdb.firebaseio.com",
  // measurementId: "G-BBN29KMY8Z"
 };
 
